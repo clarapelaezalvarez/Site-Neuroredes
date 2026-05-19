@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Neuroredes</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Artigos, reflexões e novidades sobre Ciência das Redes, ONA, Inteligência Coletiva e comportamento organizacional.">
+    <meta name="keywords" content="Blog, Ciência das Redes, ONA, Inteligência Coletiva, Cultura Organizacional, Gestão Sistêmica">
+    
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="https://neuroredes.com.br/wp-content/uploads/2023/08/Asset-1neuroredes.png" alt="Neuroredes Logo" id="nav-logo">
+            </a>
+            
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html#home">Home</a></li>
+                    <li><a href="index.html#manifesto">Manifesto</a></li>
+                    <li><a href="index.html#pilares">Pilares</a></li>
+                    <li><a href="index.html#identidade">Posicionamento</a></li>
+                    <li><a href="index.html#missao">Missão & Valores</a></li>
+                    <li><a href="https://analise.neuroredes.com.br" target="_blank">Análises</a></li>
+                    <li><a href="https://pesquisa.neuroredes.com.br/" target="_blank">Pesquisas</a></li>
+                    <li><a href="biblioteca.html">Biblioteca</a></li>
+                    <li><a href="blog.html" class="active">Blog</a></li>
+                    <li><a href="index.html#contato" class="btn-nav">Fale Conosco</a></li>
+                </ul>
+            </nav>
+            
+            <button class="menu-toggle" aria-label="Abrir Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Page Header (Blog Hero) -->
+    <section class="blog-hero">
+        <div class="container">
+            <h1>Blog & Artigos</h1>
+            <p>Pensamento sistêmico, ciência e comportamento organizacional em discussões aprofundadas.</p>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="blog-section">
+        <div class="container">
+            
+            <!-- Search & Filters Container -->
+            <div class="blog-controls">
+                <!-- Search input -->
+                <div class="blog-search-bar">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="blog-search" placeholder="Buscar artigos por título, conteúdo ou tema...">
+                    </div>
+                </div>
+                
+                <!-- Category Pills (Dynamically filled) -->
+                <div class="category-filters" id="category-filters-container">
+                    <button class="filter-pill active" data-category="all">Todos</button>
+                    <!-- JavaScript will insert other categories here -->
+                </div>
+                
+                <!-- Status Stats -->
+                <div class="search-stats-container">
+                    Exibindo <span id="visible-count">0</span> de <span id="total-count">0</span> artigos
+                </div>
+            </div>
+
+            <!-- Posts Grid -->
+            <div class="posts-grid" id="posts-container">
+                <!-- JavaScript will dynamically render post cards here -->
+                <div class="loading-spinner">
+                    <i class="fas fa-circle-notch fa-spin"></i> Carregando artigos...
+                </div>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination-container" id="pagination-controls">
+                <!-- Dynamically populated page buttons -->
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Premium Article Reader Modal -->
+    <div class="reader-modal" id="reader-modal" role="dialog" aria-hidden="true">
+        <!-- Reading progress bar -->
+        <div class="reading-progress-bar" id="reading-progress"></div>
+        
+        <div class="reader-modal-overlay"></div>
+        <div class="reader-modal-container">
+            <!-- Modal Header / Controls -->
+            <div class="reader-header">
+                <button class="reader-btn-back" id="reader-close-btn" aria-label="Voltar para a lista">
+                    <i class="fas fa-arrow-left"></i> Voltar para o Blog
+                </button>
+                <div class="reader-actions">
+                    <button class="reader-action-btn" id="reader-share-btn" title="Copiar link do artigo">
+                        <i class="fas fa-share-nodes"></i> Compartilhar
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body (Article Content) -->
+            <article class="reader-article">
+                <!-- Featured Image -->
+                <div class="reader-featured-image-wrapper" id="reader-img-wrapper">
+                    <img id="reader-featured-img" src="" alt="Featured Image">
+                </div>
+                
+                <div class="reader-meta">
+                    <span class="reader-date" id="reader-date">17 de Abril de 2026</span>
+                    <span class="reader-category-pill" id="reader-category">Sem categoria</span>
+                </div>
+                
+                <h1 class="reader-title" id="reader-title">Título do Artigo</h1>
+                
+                <div class="reader-content-body" id="reader-content">
+                    <!-- Dynamic WordPress post content goes here -->
+                </div>
+                
+                <!-- Footer within article -->
+                <div class="reader-article-footer">
+                    <p>Gostou deste texto? Compartilhe com sua rede de contatos ou entre em contato conosco para saber mais sobre nosso trabalho.</p>
+                    <div class="reader-footer-actions">
+                        <button class="btn btn-primary" id="reader-footer-close-btn">Voltar para o Blog</button>
+                        <a href="index.html#contato" class="btn btn-secondary">Fale Conosco</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-desc-col">
+                    <a href="index.html" class="footer-logo">
+                        <img src="https://neuroredes.com.br/wp-content/uploads/2023/08/Asset-1neuroredes.png" alt="Neuroredes Logo">
+                    </a>
+                    <p class="footer-desc">A Neuroredes é dedicada a construir pontes duradouras entre o rigor científico e o desenvolvimento de inteligência coletiva em organizações.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Navegação</h4>
+                    <ul>
+                        <li><a href="index.html#home">Home</a></li>
+                        <li><a href="index.html#manifesto">Manifesto</a></li>
+                        <li><a href="index.html#pilares">Pilares</a></li>
+                        <li><a href="index.html#identidade">Posicionamento</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Abas Oficiais</h4>
+                    <ul>
+                        <li><a href="biblioteca.html">Biblioteca</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="https://analise.neuroredes.com.br" target="_blank">Análises</a></li>
+                        <li><a href="https://pesquisa.neuroredes.com.br/" target="_blank">Pesquisas</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Neuroredes. Todos os direitos reservados.</p>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/company/neuroredes" target="_blank" class="social-link" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script src="script.js"></script>
+    <script>
+        // Blog Logic Implementation
+        let blogPosts = [];
+        let filteredPosts = [];
+        let activeCategory = 'all';
+        let searchQuery = '';
+        let currentPage = 1;
+        const postsPerPage = 9; // Show 9 posts per page for optimal grid layout
+        
+        // Element references
+        const postsContainer = document.getElementById('posts-container');
+        const filtersContainer = document.getElementById('category-filters-container');
+        const searchInput = document.getElementById('blog-search');
+        const visibleCountSpan = document.getElementById('visible-count');
+        const totalCountSpan = document.getElementById('total-count');
+        const paginationControls = document.getElementById('pagination-controls');
+        
+        // Modal Element references
+        const readerModal = document.getElementById('reader-modal');
+        const readerTitle = document.getElementById('reader-title');
+        const readerDate = document.getElementById('reader-date');
+        const readerCategory = document.getElementById('reader-category');
+        const readerContent = document.getElementById('reader-content');
+        const readerFeaturedImg = document.getElementById('reader-featured-img');
+        const readerImgWrapper = document.getElementById('reader-img-wrapper');
+        const readerCloseBtn = document.getElementById('reader-close-btn');
+        const readerFooterCloseBtn = document.getElementById('reader-footer-close-btn');
+        const readerShareBtn = document.getElementById('reader-share-btn');
+        const readingProgressBar = document.getElementById('reading-progress');
+        const modalContainer = readerModal.querySelector('.reader-modal-container');
+        
+        // Load data from blog-data.json
+        async function loadBlogData() {
+            try {
+                const response = await fetch('blog-data.json');
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar dados do blog');
+                }
+                blogPosts = await response.json();
+                
+                // Sort posts by date_iso descending
+                blogPosts.sort((a, b) => new Date(b.date_iso) - new Date(a.date_iso));
+                
+                filteredPosts = [...blogPosts];
+                totalCountSpan.textContent = blogPosts.length;
+                
+                // Populate category filters dynamically
+                setupCategoryFilters();
+                
+                // Render initial state
+                updateBlogView();
+                
+                // Check if a specific post slug or ID is requested via URL hash
+                handleUrlHash();
+            } catch (err) {
+                console.error(err);
+                postsContainer.innerHTML = `
+                    <div class="blog-error">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        <p>Ocorreu um erro ao carregar os artigos do blog. Por favor, tente novamente mais tarde.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Populate filter pills dynamically
+        function setupCategoryFilters() {
+            const categoriesSet = new Set();
+            blogPosts.forEach(post => {
+                if (post.categories && post.categories.length > 0) {
+                    post.categories.forEach(cat => categoriesSet.add(cat));
+                }
+            });
+            
+            // Render pills
+            const categories = Array.from(categoriesSet).sort();
+            categories.forEach(cat => {
+                if (!cat) return; // Skip empty
+                const btn = document.createElement('button');
+                btn.className = 'filter-pill';
+                btn.textContent = cat;
+                btn.setAttribute('data-category', cat);
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeCategory = cat;
+                    currentPage = 1;
+                    filterPosts();
+                });
+                filtersContainer.appendChild(btn);
+            });
+            
+            // Connect 'All' button click
+            const allBtn = filtersContainer.querySelector('[data-category="all"]');
+            if (allBtn) {
+                allBtn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    allBtn.classList.add('active');
+                    activeCategory = 'all';
+                    currentPage = 1;
+                    filterPosts();
+                });
+            }
+        }
+        
+        // Handle Search input
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                currentPage = 1;
+                filterPosts();
+            });
+        }
+        
+        // Main filtering logic
+        function filterPosts() {
+            filteredPosts = blogPosts.filter(post => {
+                const matchesCategory = activeCategory === 'all' || 
+                                       (post.categories && post.categories.includes(activeCategory));
+                                       
+                const matchesSearch = !searchQuery || 
+                                     post.title.toLowerCase().includes(searchQuery) ||
+                                     post.excerpt.toLowerCase().includes(searchQuery) ||
+                                     post.content.toLowerCase().includes(searchQuery);
+                                     
+                return matchesCategory && matchesSearch;
+            });
+            
+            updateBlogView();
+        }
+        
+        // Updates posts grid and pagination
+        function updateBlogView() {
+            visibleCountSpan.textContent = filteredPosts.length;
+            
+            if (filteredPosts.length === 0) {
+                postsContainer.innerHTML = `
+                    <div class="blog-no-results">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <p>Nenhum artigo encontrado para a sua busca ou filtro.</p>
+                    </div>
+                `;
+                paginationControls.innerHTML = '';
+                return;
+            }
+            
+            // Calculate indices
+            const startIndex = (currentPage - 1) * postsPerPage;
+            const endIndex = startIndex + postsPerPage;
+            const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+            
+            // Clear and render
+            postsContainer.innerHTML = '';
+            paginatedPosts.forEach(post => {
+                const card = createPostCard(post);
+                postsContainer.appendChild(card);
+            });
+            
+            // Setup pagination controls
+            renderPaginationControls();
+        }
+        
+        // Create HTML elements for a card
+        function createPostCard(post) {
+            const card = document.createElement('article');
+            card.className = 'post-card';
+            
+            const defaultImage = 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=600&auto=format&fit=crop';
+            const imgUrl = post.image || defaultImage;
+            
+            const categoryLabel = post.categories && post.categories.length > 0 ? post.categories[0] : 'Sem categoria';
+            
+            card.innerHTML = `
+                <div class="post-card-image-wrapper">
+                    <img src="${imgUrl}" alt="${post.title}" loading="lazy" onerror="this.src='${defaultImage}'">
+                    <span class="post-card-category">${categoryLabel}</span>
+                </div>
+                <div class="post-card-content">
+                    <div class="post-card-date">${post.date}</div>
+                    <h3 class="post-card-title">${post.title}</h3>
+                    <p class="post-card-excerpt">${post.excerpt}</p>
+                    <button class="post-card-btn">Ler Artigo <i class="fas fa-arrow-right"></i></button>
+                </div>
+            `;
+            
+            // Click handler to open the reader
+            card.addEventListener('click', () => {
+                openArticle(post);
+            });
+            
+            return card;
+        }
+        
+        // Render pagination buttons
+        function renderPaginationControls() {
+            const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+            paginationControls.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn prev-btn';
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateBlogView();
+                    window.scrollTo({ top: document.querySelector('.blog-controls').offsetTop - 100, behavior: 'smooth' });
+                }
+            });
+            paginationControls.appendChild(prevBtn);
+            
+            // Page number buttons
+            for (let i = 1; i <= totalPages; i++) {
+                // Show limit buttons to prevent huge layouts if many pages
+                if (totalPages > 5 && Math.abs(currentPage - i) > 2 && i !== 1 && i !== totalPages) {
+                    // Render spacer dots once
+                    if (i === 2 || i === totalPages - 1) {
+                        const dots = document.createElement('span');
+                        dots.className = 'pagination-spacer';
+                        dots.textContent = '...';
+                        paginationControls.appendChild(dots);
+                    }
+                    continue;
+                }
+                
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    updateBlogView();
+                    window.scrollTo({ top: document.querySelector('.blog-controls').offsetTop - 100, behavior: 'smooth' });
+                });
+                paginationControls.appendChild(pageBtn);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn next-btn';
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updateBlogView();
+                    window.scrollTo({ top: document.querySelector('.blog-controls').offsetTop - 100, behavior: 'smooth' });
+                }
+            });
+            paginationControls.appendChild(nextBtn);
+        }
+        
+        // Open Premium Article Reader Modal
+        let activePost = null;
+        
+        function openArticle(post) {
+            activePost = post;
+            readerTitle.textContent = post.title;
+            readerDate.textContent = post.date;
+            
+            const categoryLabel = post.categories && post.categories.length > 0 ? post.categories.join(', ') : 'Sem categoria';
+            readerCategory.textContent = categoryLabel;
+            
+            // Set content HTML
+            readerContent.innerHTML = post.content;
+            
+            // Adjust local image URLs or external sources if needed
+            // Clean up empty paragraphs
+            const paragraphs = readerContent.querySelectorAll('p');
+            paragraphs.forEach(p => {
+                if (p.innerHTML.trim() === '') p.remove();
+            });
+            
+            // Process featured image
+            if (post.image) {
+                readerFeaturedImg.src = post.image;
+                readerImgWrapper.style.display = 'block';
+            } else {
+                readerImgWrapper.style.display = 'none';
+            }
+            
+            // Set URL hash for deep linking
+            window.location.hash = `post-${post.id}`;
+            
+            // Reset reading progress bar
+            readingProgressBar.style.width = '0%';
+            
+            // Show modal
+            readerModal.classList.add('active');
+            readerModal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden'; // Stop scrolling on background
+            
+            // Reset modal scroll to top
+            modalContainer.scrollTop = 0;
+            
+            // Add scroll listener for progress bar
+            modalContainer.addEventListener('scroll', updateReadingProgress);
+        }
+        
+        function closeArticle() {
+            readerModal.classList.remove('active');
+            readerModal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = ''; // Restore background scroll
+            
+            // Clear hash without reloading
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+            
+            modalContainer.removeEventListener('scroll', updateReadingProgress);
+            activePost = null;
+        }
+        
+        function updateReadingProgress() {
+            const scrollTop = modalContainer.scrollTop;
+            const scrollHeight = modalContainer.scrollHeight - modalContainer.clientHeight;
+            if (scrollHeight > 0) {
+                const percent = (scrollTop / scrollHeight) * 100;
+                readingProgressBar.style.width = `${percent}%`;
+            } else {
+                readingProgressBar.style.width = '0%';
+            }
+        }
+        
+        // Share article link
+        function shareArticle() {
+            if (!activePost) return;
+            const shareUrl = `${window.location.origin}${window.location.pathname}#post-${activePost.id}`;
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const originalText = readerShareBtn.innerHTML;
+                readerShareBtn.innerHTML = '<i class="fas fa-check"></i> Link copiado!';
+                readerShareBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    readerShareBtn.innerHTML = originalText;
+                    readerShareBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+        
+        // Handles URL hash parameters (deep linking)
+        function handleUrlHash() {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#post-')) {
+                const postId = parseInt(hash.replace('#post-', ''), 10);
+                if (!isNaN(postId)) {
+                    const post = blogPosts.find(p => p.id === postId);
+                    if (post) {
+                        openArticle(post);
+                    }
+                }
+            }
+        }
+        
+        // Event listeners for modal closing
+        readerCloseBtn.addEventListener('click', closeArticle);
+        readerFooterCloseBtn.addEventListener('click', closeArticle);
+        readerShareBtn.addEventListener('click', shareArticle);
+        
+        // Click outside container to close modal
+        readerModal.querySelector('.reader-modal-overlay').addEventListener('click', closeArticle);
+        
+        // Esc key closes modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && readerModal.classList.contains('active')) {
+                closeArticle();
+            }
+        });
+        
+        // Listen to hash changes (for browser back/forward buttons)
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash;
+            if (!hash && readerModal.classList.contains('active')) {
+                closeArticle();
+            } else {
+                handleUrlHash();
+            }
+        });
+        
+        // Bootstrap blog
+        window.addEventListener('DOMContentLoaded', loadBlogData);
+    </script>
+</body>
+</html>
