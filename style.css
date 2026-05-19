@@ -1956,4 +1956,119 @@ textarea.form-control {
     }
 }
 
+/* ONA Section Home Layout */
+.ona-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
 
+.ona-content h3 {
+    font-family: var(--font-title);
+    color: var(--color-primary);
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.ona-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.ona-feature-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.ona-feature-icon {
+    font-size: 1.25rem;
+    color: var(--color-primary);
+    background-color: var(--color-primary-light);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ona-feature-text h4 {
+    font-family: var(--font-title);
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+}
+
+.ona-feature-text p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.ona-card {
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem 2rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.ona-card h3 {
+    font-family: var(--font-title);
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.ona-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.ona-step-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.ona-step-num {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    font-family: var(--font-title);
+    font-weight: bold;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.ona-step-text h4 {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    margin-bottom: 0.15rem;
+}
+
+.ona-step-text p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+@media (max-width: 992px) {
+    .ona-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+}

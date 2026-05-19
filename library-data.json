@@ -1,0 +1,106 @@
+[
+  {
+    "id": 1,
+    "title": "Social entanglement",
+    "subtitle": "Ciência das Redes",
+    "description": "Sobre os sistemas de geração de riquezas e seus impactos nas relações sociais. Um estudo das estruturas e dinâmicas das redes de relacionamento sociais.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Entanglement.pdf",
+    "icon": "fa-diagram-project"
+  },
+  {
+    "id": 2,
+    "title": "Aburrimiento, Rebeldía y Ciberturbas",
+    "subtitle": "Ciência das Redes",
+    "description": "La pregunta clave que anima este trabajo es cuándo los individuos modifican sus pautas de comportamento cambiando consigo la red social en la que actúan. Nos introduce entonces en el concepto de umbral de rebeldía, el número de miembros de mi red que deben estar dispuestos a cambiar su comportamiento para que yo mismo lo cambie.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Aburrimiento-rebeldia-y-ciberturbas.pdf",
+    "icon": "fa-book-open"
+  },
+  {
+    "id": 3,
+    "title": "La filosofía y las redes sociales",
+    "subtitle": "Ciência das Redes",
+    "description": "El objetivo de este escrito es relativamente sencillo: mostrar, o poner de relieve, diversos aspectos de las redes sociales y la web 2.0 que pueden ser tema de reflexión filosófica. Contrario a lo que pudiera pensarse, la web 2.0 no es un objeto alejado de la filosofía que sólo concierne a engenieros e informáticos, sino que prácticamente todas las áreas o disciplinas filosóficas tienen algo que decir sobre Internet y las redes Sociales.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Alberto-Constante-la-filosofia-y-las-redes-sociales.pdf",
+    "icon": "fa-circle-nodes"
+  },
+  {
+    "id": 4,
+    "title": "Linked",
+    "subtitle": "Ciência das Redes",
+    "description": "A string of recent breathtaking discoveries has forced us to acknowledge that amazingly simple and far-reaching natural laws govern the structure and the evolution of all the complex networks that surround us.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Barabasi_Linked.pdf",
+    "icon": "fa-book-open"
+  },
+  {
+    "id": 5,
+    "title": "Beyond Semantic Web",
+    "subtitle": "Ciência das Redes",
+    "description": "Palestra de Pierre Lévy em Montreal (2008) sobre ferramentas simbólicas, conversações globais e inteligência coletiva.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Beyond-Semantic-Web-Pierre-Levy.pdf",
+    "icon": "fa-book-open"
+  },
+  {
+    "id": 6,
+    "title": "Biases in perceiving one's own social position",
+    "subtitle": "Devon D. Brewer",
+    "description": "In a review of research conducted in natural social settings, I find evidence of three such biases: over-estimation of own dominance rank, overreporting own social interaction with higher status others, and over-estimation of own centrality in social networks. For each bias, several studies suggest a moderate strength illusion. I offer evolutionary accounts of the adaptive functions of these biases.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Biases-in-perceiving-ones-own-social-position-Devon-Brewer.pdf",
+    "icon": "fa-users"
+  },
+  {
+    "id": 7,
+    "title": "Birds of a Feather",
+    "subtitle": "Ciência das Redes",
+    "description": "Similarity breeds connection. This principle—the homophily principle—structures network ties of every type, including marriage, friendship, work, advice, support, information transfer, exchange, comembership, and other types of relationship. The result is that people's personal networks are homogeneous with regard to many sociodemographic, behavioral, and intrapersonal characteristics.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Birds-of-a-feather-homophily-in-social-networks.pdf",
+    "icon": "fa-book-open"
+  },
+  {
+    "id": 8,
+    "title": "Bursts",
+    "subtitle": "Ciência das Redes",
+    "description": "If all goes well, by the time you close this book, I will have convinced you that, despite the spontaneity you may exhibit, you are far more predictable than you are willing to admit. This is by no means personal. I am just as easy to forecast as is everybody with whom I live and work.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/BURSTS-Barabasi-2010.pdf",
+    "icon": "fa-book-open"
+  },
+  {
+    "id": 9,
+    "title": "Cascade dynamics of complex propagation",
+    "subtitle": "Ciência das Redes",
+    "description": "Random links between otherwise distant nodes can greatly facilitate the propagation of disease or information, provided contagion can be transmitted by a single active node. However, we show that when the propagation requires simultaneous exposure to multiple sources of activation, called complex propagation, the effect of random links can be just the opposite; it can make the propagation more difficult to achieve.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/cascade-dynamics-of-complex-propagation.pdf",
+    "icon": "fa-chart-line"
+  },
+  {
+    "id": 10,
+    "title": "Through the Looking Glass of Complexity",
+    "subtitle": "Ciência das Redes",
+    "description": "Organizations are now routinely viewed as dynamic systems of adaptation and evolution that contain multiple parts which interact with one another and the environment. Such a representation is so common that it has acquired the status of a self-evident fact. Yet the profound implications of such a viewpoint for theory and analysis have not been adequately examined or exploited.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Complexity-The-Dynamics-of-organizations-as-adaptive-evolving-systemas-Morel1999.pdf",
+    "icon": "fa-diagram-project"
+  },
+  {
+    "id": 11,
+    "title": "Complexity theories and organizational change",
+    "subtitle": "Ciência das Redes",
+    "description": "Complexity theories are increasingly being seen by academics and practitioners as a way of understanding and changing organizations. The aim of this paper is to review the nature of complexity theories and their importance and implications for organizations and organizational change.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Complexity-theories-and-organizational-change-Burnes.pdf",
+    "icon": "fa-diagram-project"
+  },
+  {
+    "id": 12,
+    "title": "Cumulative effects of triadic closure and homophily in social networks",
+    "subtitle": "Ciência das Redes",
+    "description": "Social network structure has often been attributed to two network evolution mechanisms—triadic closure and choice homophily—which are commonly considered independently or with static models. However, empirical studies suggest that their dynamic interplay generates the observed homophily of real-world social networks.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/Cumulative-effects-of-triadic-closure-and-homophily.pdf",
+    "icon": "fa-circle-nodes"
+  },
+  {
+    "id": 13,
+    "title": "Cyberculture Theorists",
+    "subtitle": "Ciência das Redes",
+    "description": "This book surveys a 'cluster' of works that seek to explore the cultures of cyberspace, the Internet and the information society. It introduces key ideas, and includes detailed discussion of the work of two key thinkers in this area, Manuel Castells and Donna Haraway.",
+    "download_url": "https://neuroredes.com.br/wp-content/uploads/2023/08/cyberculture_theorists_manuel_castells.pdf",
+    "icon": "fa-book-open"
+  }
+]

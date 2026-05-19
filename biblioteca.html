@@ -14,6 +14,365 @@
     
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Add Librarian Panel Specific Styles inline for modularity -->
+    <style>
+        .librarian-panel-trigger-wrapper {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .btn-librarian {
+            background-color: var(--color-primary-light);
+            color: var(--color-primary);
+            border: 1px solid rgba(44, 93, 164, 0.2);
+            transition: var(--transition-fast);
+        }
+        
+        .btn-librarian:hover {
+            background-color: var(--color-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(44, 93, 164, 0.2);
+        }
+
+        /* Librarian Modal Styling */
+        .librarian-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .librarian-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .librarian-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .librarian-modal-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            background-color: var(--bg-main);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 2101;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid var(--border-color);
+        }
+
+        .librarian-modal.active .librarian-modal-container {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .librarian-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-sec);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .librarian-modal-header h2 {
+            font-family: var(--font-title);
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .librarian-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .librarian-modal-close:hover {
+            color: var(--error);
+        }
+
+        .librarian-form {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input[type="text"],
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            background-color: var(--bg-sec);
+            transition: var(--transition-fast);
+            color: var(--text-primary);
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background-color: var(--bg-main);
+            box-shadow: 0 0 0 3px rgba(44, 93, 164, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .pdf-source-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .pdf-tab-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition-fast);
+        }
+
+        .pdf-tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .pdf-source-panel {
+            display: none;
+        }
+
+        .pdf-source-panel.active {
+            display: block;
+        }
+
+        .pdf-file-drop {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            text-align: center;
+            background-color: var(--bg-sec);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .pdf-file-drop:hover {
+            border-color: var(--color-primary);
+            background-color: var(--color-primary-light);
+        }
+
+        .pdf-file-drop i {
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .pdf-file-drop p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .file-selected-info {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background-color: var(--color-primary-light);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(44, 93, 164, 0.15);
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-selected-info span {
+            font-size: 0.85rem;
+            color: var(--color-primary);
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 80%;
+        }
+
+        .file-selected-remove {
+            background: none;
+            border: none;
+            color: var(--error);
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
+
+        .admin-sidebar {
+            background-color: var(--color-primary-light);
+            border: 1px solid rgba(44, 93, 164, 0.15);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .admin-sidebar h4 {
+            font-family: var(--font-title);
+            color: var(--color-primary);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-sidebar ol {
+            margin-left: 1.25rem;
+        }
+
+        .admin-sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Toast Banner */
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 3000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast-notification.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-notification i {
+            font-size: 1.2rem;
+        }
+
+        /* Loading spinner inside library */
+        .loading-spinner {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-main);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            color: var(--text-secondary);
+            grid-column: 1 / -1;
+        }
+
+        .loading-spinner i {
+            font-size: 2.5rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -30,6 +389,7 @@
                     <li><a href="index.html#manifesto">Manifesto</a></li>
                     <li><a href="index.html#pilares">Pilares</a></li>
                     <li><a href="index.html#identidade">Posicionamento</a></li>
+                    <li><a href="index.html#ona">ONA by Nexum</a></li>
                     <li><a href="index.html#missao">Missão & Valores</a></li>
                     <li><a href="https://analise.neuroredes.com.br" target="_blank">Análises</a></li>
                     <li><a href="https://pesquisa.neuroredes.com.br/" target="_blank">Pesquisas</a></li>
@@ -45,11 +405,16 @@
         </div>
     </header>
 
-    <!-- Page Header (using library-hero class from style.css) -->
+    <!-- Page Header -->
     <section class="library-hero">
         <div class="container">
             <h1>Biblioteca Científica</h1>
             <p>Uma coleção selecionada de estudos, livros e artigos clássicos que fundamentam o nosso trabalho em Ciência das Redes e Inteligência Coletiva.</p>
+            <div class="librarian-panel-trigger-wrapper">
+                <button class="btn btn-librarian" id="open-librarian-btn">
+                    <i class="fas fa-plus"></i> Área do Bibliotecário
+                </button>
+            </div>
         </div>
     </section>
 
@@ -64,353 +429,119 @@
                     <input type="text" id="library-search" placeholder="Buscar por título, autor ou palavra-chave...">
                 </div>
                 <div class="search-stats">
-                    Exibindo <span id="visible-count">13</span> de 13 publicações
+                    Exibindo <span id="visible-count">0</span> de <span id="total-count">0</span> publicações
                 </div>
             </div>
 
             <!-- Books Grid -->
             <div class="books-grid" id="books-container">
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Social entanglement" data-subtitle="Ciência das Redes" data-desc="Sobre os sistemas de geraÃ§Ã£o de riquezas e seus impactos nas relaÃ§Ãµes sociais. Um estudo das estruturas e dinÃ¢micas das redes de relacionamento sociais.">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-diagram-project"></i>
-                            </div>
-                            <h3>Social entanglement</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Social entanglement</h3>
-                                <p>Sobre os sistemas de geraÃ§Ã£o de riquezas e seus impactos nas relaÃ§Ãµes sociais. Um estudo das estruturas e dinÃ¢micas das redes de relacionamento sociais.</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Entanglement.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Aburrimiento,  RebeldÃ­a y Ciberturbas" data-subtitle="Ciência das Redes" data-desc="La pregunta clave que anima este trabajo es cÃºando los individuos modifican sus pautas de comportamiento cambiando consigo la red social en la que actÃºan. Nos introduce entonces en el concepto de umbral de rebeldÃ­a, el nÃºmero de miembros de mi red que deben estar dispuestos a cambiar su comportamiento para que yo mismo lo cambie.">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-book-open"></i>
-                            </div>
-                            <h3>Aburrimiento,  RebeldÃ­a y Ciberturbas</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Aburrimiento,  RebeldÃ­a y Ciberturbas</h3>
-                                <p>La pregunta clave que anima este trabajo es cÃºando los individuos modifican sus pautas de comportamiento cambiando consigo la red social en la que actÃºan. Nos introduce entonces en el concepto de umbral de rebeldÃ­a, el nÃºmero de miembros de mi red que deben estar dispuestos a cambiar su comportamiento para que yo mismo lo cambie.</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Aburrimiento-rebeldia-y-ciberturbas.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="La filosofÃ­a y las redes sociales" data-subtitle="Ciência das Redes" data-desc="â€œEl objetivo de este escrito es relativamente sencillo: mostrar, o poner de relieve, diversos aspectos de las redes sociales y la web 2.0 que pueden ser tema de reflexiÃ³n filosÃ³fica. Contrario a lo que pudiera pensarse, la web 2.0 no es un objeto alejado de la filosofÃ­a que sÃ³lo concierne a ingenieros e informÃ¡ticos, sino que prÃ¡cticamente todas las Ã¡reas o disciplinas filosÃ³ficas tienen algo que decir sobre Internet y las redes Socialesâ€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-circle-nodes"></i>
-                            </div>
-                            <h3>La filosofÃ­a y las redes sociales</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>La filosofÃ­a y las redes sociales</h3>
-                                <p>â€œEl objetivo de este escrito es relativamente sencillo: mostrar, o poner de relieve, diversos aspectos de las redes sociales y la web 2.0 que pueden ser tema de reflexiÃ³n filosÃ³fica. Contrario a lo que pudiera pensarse, la web 2.0 no es un objeto alejado de la filosofÃ­a que sÃ³lo concierne a ingenieros e informÃ¡ticos, sino que prÃ¡cticamente todas las Ã¡reas o disciplinas filosÃ³ficas tienen algo que decir sobre Internet y las redes Socialesâ€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Alberto-Constante-la-filosofia-y-las-redes-sociales.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Linked" data-subtitle="Ciência das Redes" data-desc="â€œA string of recent breathtaking discoveries has forced us to acknowledge that amazingly simple and far-reaching natural laws govern the structure and the evolution of all the complex networks that surround us.â€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-book-open"></i>
-                            </div>
-                            <h3>Linked</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Linked</h3>
-                                <p>â€œA string of recent breathtaking discoveries has forced us to acknowledge that amazingly simple and far-reaching natural laws govern the structure and the evolution of all the complex networks that surround us.â€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Barabasi_Linked.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Beyond Semantic Web" data-subtitle="Ciência das Redes" data-desc="Palestra de Pierre Levy em Montreal (2008) sobre ferramentas simbÃ³licas, conversaÃ§Ãµes globais e inteligÃªncia coletiva.">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-book-open"></i>
-                            </div>
-                            <h3>Beyond Semantic Web</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Beyond Semantic Web</h3>
-                                <p>Palestra de Pierre Levy em Montreal (2008) sobre ferramentas simbÃ³licas, conversaÃ§Ãµes globais e inteligÃªncia coletiva.</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Beyond-Semantic-Web-Pierre-Levy.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Biases in perceiving one's own social position" data-subtitle="Devon D. Brewer" data-desc="â€œIn a review of research conducted in natural social settings, I find evidence of three such biases: over-estimation of own dominance rank, overreporting own social interaction with higher status others, and over-estimation of own centrality in social networks. For each bias, several studies suggest a moderate strength illusion. I offer evolutionary accounts of the adaptive functions of these biases. Most interpretations concern the potential that these illusions stimulate individuals to behave in ways that lead to higher status and cultivation of beneficial social ties.â€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <h3>Biases in perceiving one's own social position</h3>
-                            <div class="subtitle">Devon D. Brewer</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Biases in perceiving one's own social position</h3>
-                                <p>â€œIn a review of research conducted in natural social settings, I find evidence of three such biases: over-estimation of own dominance rank, overreporting own social interaction with higher status others, and over-estimation of own centrality in social networks. For each bias, several studies suggest a moderate strength illusion. I offer evolutionary accounts of the adaptive functions of these biases. Most interpretations concern the potential that these illusions stimulate individuals to behave in ways that lead to higher status and cultivation of beneficial social ties.â€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Biases-in-perceiving-ones-own-social-position-Devon-Brewer.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Birds of a Feather" data-subtitle="Ciência das Redes" data-desc="â€œSimilarity breeds connection. This principleâ€”the homophily principleâ€”structures network ties of every type, including marriage, friendship, work, advice, support, information transfer, exchange, comembership, and other types of relationship. The result is that peopleâ€™s personal networks are homogeneous with regard to many sociodemographic, behavioral, and intrapersonal characteristics. Homophily limits peopleâ€™s social worlds in a way that has powerful implications for the information they receive, the attitudes they form, and the interaction they experience.â€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-book-open"></i>
-                            </div>
-                            <h3>Birds of a Feather</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Birds of a Feather</h3>
-                                <p>â€œSimilarity breeds connection. This principleâ€”the homophily principleâ€”structures network ties of every type, including marriage, friendship, work, advice, support, information transfer, exchange, comembership, and other types of relationship. The result is that peopleâ€™s personal networks are homogeneous with regard to many sociodemographic, behavioral, and intrapersonal characteristics. Homophily limits peopleâ€™s social worlds in a way that has powerful implications for the information they receive, the attitudes they form, and the interaction they experience.â€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Birds-of-a-feather-homophily-in-social-networks.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Bursts" data-subtitle="Ciência das Redes" data-desc="â€œIf all goes well, by the time you close this book, I will have convinced you that, despite de spontaneity you may exhibit, you are far more predictable than you are willing to admit. This is by no means personal. I am just as easy to forecast as is everybody with whom I live and work. In fact, algorithms built in my lab to discover how predictable we are were tested on millions of individuals and failed only once...â€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-book-open"></i>
-                            </div>
-                            <h3>Bursts</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Bursts</h3>
-                                <p>â€œIf all goes well, by the time you close this book, I will have convinced you that, despite de spontaneity you may exhibit, you are far more predictable than you are willing to admit. This is by no means personal. I am just as easy to forecast as is everybody with whom I live and work. In fact, algorithms built in my lab to discover how predictable we are were tested on millions of individuals and failed only once...â€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/BURSTS-Barabasi-2010.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Cascade dynamics of complex propagation" data-subtitle="Ciência das Redes" data-desc="â€œRandom links between otherwise distant nodes can greatly facilitate the propagation of disease or information, provided contagion can be transmitted by a single active node. However, we show that when the propagation requires simultaneous exposure to multiple sources of activation, called complex propagation, the effect of random links can be just the opposite; it can make the propagation more difficult to achieveâ€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <h3>Cascade dynamics of complex propagation</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Cascade dynamics of complex propagation</h3>
-                                <p>â€œRandom links between otherwise distant nodes can greatly facilitate the propagation of disease or information, provided contagion can be transmitted by a single active node. However, we show that when the propagation requires simultaneous exposure to multiple sources of activation, called complex propagation, the effect of random links can be just the opposite; it can make the propagation more difficult to achieveâ€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/cascade-dynamics-of-complex-propagation.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Through the Looking Glass of Complexity" data-subtitle="Ciência das Redes" data-desc="â€œOrganizations are now routinely viewed as dynamic systems of adaptation and evolution that contain multiple parts which interact with one another and the environment. Such a representation is so common that it has acquired the status of a selfevident fact. Yet the profound implications of such a viewpoint for theory and analysis have not been adequately examined or exploited... In this paper we propose that by explicitly recognizing the complex system characteristics of organizations and pursuing their implications, organization theory (OT) can profit from the advances made in the field of CST.â€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-diagram-project"></i>
-                            </div>
-                            <h3>Through the Looking Glass of Complexity</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Through the Looking Glass of Complexity</h3>
-                                <p>â€œOrganizations are now routinely viewed as dynamic systems of adaptation and evolution that contain multiple parts which interact with one another and the environment. Such a representation is so common that it has acquired the status of a selfevident fact. Yet the profound implications of such a viewpoint for theory and analysis have not been adequately examined or exploited... In this paper we propose that by explicitly recognizing the complex system characteristics of organizations and pursuing their implications, organization theory (OT) can profit from the advances made in the field of CST.â€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Complexity-The-Dynamics-of-organizations-as-adaptive-evolving-systemas-Morel1999.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Complexity theories and organizational change" data-subtitle="Ciência das Redes" data-desc="â€œComplexity theories are increasingly being seen by academics and practitioners as a way of understanding and changing organizations. The aim of this paper is to review the nature of complexity theories and their importance and implications for organizations and organizational change.â€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-diagram-project"></i>
-                            </div>
-                            <h3>Complexity theories and organizational change</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Complexity theories and organizational change</h3>
-                                <p>â€œComplexity theories are increasingly being seen by academics and practitioners as a way of understanding and changing organizations. The aim of this paper is to review the nature of complexity theories and their importance and implications for organizations and organizational change.â€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Complexity-theories-and-organizational-change-Burnes.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Cumulative effects of triadic closure and homophily in social networks" data-subtitle="Ciência das Redes" data-desc="â€œSocial network structure has often been attributed to two network evolution mechanismsâ€”triadic closure and choice homophilyâ€”which are commonly considered independently or with static models. However, empirical studies suggest that their dynamic interplay generates the observed homophily of real-world social networks. By combining these mechanisms in a dynamic model, we confirm the longheld hypothesis that choice homophily and triadic closure cause induced homophilyâ€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-circle-nodes"></i>
-                            </div>
-                            <h3>Cumulative effects of triadic closure and homophily in social networks</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Cumulative effects of triadic closure and homophily in social networks</h3>
-                                <p>â€œSocial network structure has often been attributed to two network evolution mechanismsâ€”triadic closure and choice homophilyâ€”which are commonly considered independently or with static models. However, empirical studies suggest that their dynamic interplay generates the observed homophily of real-world social networks. By combining these mechanisms in a dynamic model, we confirm the longheld hypothesis that choice homophily and triadic closure cause induced homophilyâ€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/Cumulative-effects-of-triadic-closure-and-homophily.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 3D Flip Book Card -->
-                <div class="book-card-container" data-title="Cyberculture Theorists" data-subtitle="Ciência das Redes" data-desc="â€œThis book surveys a â€˜clusterâ€™ of works that seek to explore the cultures of cyberspace, the Internet and the information society. It introduces key ideas, and includes detailed discussion of the work of two key thinkers in this area, Manuel Castells and Donna Haraway, as well as outlining the development of cyberculture studies as a field.â€">
-                    <div class="book-card">
-                        <!-- Front Side -->
-                        <div class="book-front">
-                            <div class="book-icon-wrapper">
-                                <i class="fas fa-book-open"></i>
-                            </div>
-                            <h3>Cyberculture Theorists</h3>
-                            <div class="subtitle">Ciência das Redes</div>
-                            <div class="flip-hint">
-                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
-                            </div>
-                        </div>
-                        <!-- Back Side -->
-                        <div class="book-back">
-                            <div class="book-back-content">
-                                <h3>Cyberculture Theorists</h3>
-                                <p>â€œThis book surveys a â€˜clusterâ€™ of works that seek to explore the cultures of cyberspace, the Internet and the information society. It introduces key ideas, and includes detailed discussion of the work of two key thinkers in this area, Manuel Castells and Donna Haraway, as well as outlining the development of cyberculture studies as a field.â€</p>
-                            </div>
-                            <a href="https://neuroredes.com.br/wp-content/uploads/2023/08/cyberculture_theorists_manuel_castells.pdf" class="book-download-btn" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Baixar PDF
-                            </a>
-                        </div>
-                    </div>
+                <div class="loading-spinner">
+                    <i class="fas fa-circle-notch fa-spin"></i> Carregando biblioteca...
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Librarian Panel Modal (Dynamic PDF CMS) -->
+    <div class="librarian-modal" id="librarian-modal" role="dialog" aria-hidden="true">
+        <div class="librarian-modal-overlay"></div>
+        <div class="librarian-modal-container">
+            <div class="librarian-modal-header">
+                <h2><i class="fas fa-book-open"></i> Adicionar Livro ou PDF</h2>
+                <button class="librarian-modal-close" id="librarian-close-btn" aria-label="Fechar painel">&times;</button>
+            </div>
+            
+            <div class="librarian-form">
+                <!-- Instructions -->
+                <div class="admin-sidebar">
+                    <h4><i class="fas fa-circle-info"></i> Como publicar permanentemente?</h4>
+                    <p>Os novos livros adicionados aqui são salvos <strong>temporariamente</strong> no seu navegador local.</p>
+                    <ol>
+                        <li>Preencha os detalhes e insira ou faça upload do PDF.</li>
+                        <li>Clique em <strong>"Adicionar à Biblioteca"</strong> para vê-lo no site imediatamente.</li>
+                        <li>Para publicar permanentemente no site oficial, clique em <strong>"Exportar library-data.json"</strong>, salve o arquivo no diretório do seu projeto substituindo o anterior, e envie ao GitHub!</li>
+                    </ol>
+                    <div class="admin-actions">
+                        <button class="btn btn-secondary btn-sm" id="btn-export-json">
+                            <i class="fas fa-file-export"></i> Exportar library-data.json
+                        </button>
+                        <button class="btn btn-danger btn-sm" id="btn-reset-local" title="Apagar livros locais cadastrados neste navegador">
+                            <i class="fas fa-trash-can"></i> Limpar Livros Locais
+                        </button>
+                    </div>
+                </div>
+
+                <form id="new-book-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="book-title">Título da Obra</label>
+                            <input type="text" id="book-title" placeholder="Ex: Ciência das Redes Complexas" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="book-subtitle">Autor / Subtítulo</label>
+                            <input type="text" id="book-subtitle" placeholder="Ex: Albert-László Barabási" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="book-icon">Ícone do Livro</label>
+                            <select id="book-icon" required>
+                                <option value="fa-book-open">Livro Aberto</option>
+                                <option value="fa-diagram-project">Rede Conectada</option>
+                                <option value="fa-circle-nodes">Nós de Rede</option>
+                                <option value="fa-users">Pessoas / Social</option>
+                                <option value="fa-chart-line">Gráfico / Estatística</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Arquivo PDF / Download</label>
+                            
+                            <div class="pdf-source-tabs">
+                                <button type="button" class="pdf-tab-btn active" data-tab="url">URL do PDF na Web</button>
+                                <button type="button" class="pdf-tab-btn" data-tab="file">Fazer Upload de PDF</button>
+                            </div>
+                            
+                            <div class="pdf-source-panel active" id="panel-pdf-url">
+                                <input type="text" id="book-pdf-url" placeholder="https://neuroredes.com.br/wp-content/uploads/...">
+                            </div>
+                            
+                            <div class="pdf-source-panel" id="panel-pdf-file">
+                                <div class="pdf-file-drop" id="file-drop-area">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <p>Selecione um arquivo PDF de até 4MB</p>
+                                    <input type="file" id="book-pdf-file" accept="application/pdf" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <!-- PDF selected info -->
+                            <div class="file-selected-info" id="pdf-selected-box">
+                                <span id="pdf-selected-name">Nenhum arquivo selecionado</span>
+                                <button type="button" class="file-selected-remove" id="btn-remove-pdf" title="Remover PDF">&times;</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="book-desc">Resumo / Descrição da Obra</label>
+                        <textarea id="book-desc" placeholder="Resumo em português, espanhol ou inglês fundamentando o assunto do PDF." required></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="librarian-cancel-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btn-book-submit">
+                            <i class="fas fa-circle-check"></i> Adicionar à Biblioteca (Local)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div class="toast-notification" id="toast-banner">
+        <i class="fas fa-circle-check"></i> <span id="toast-message">Livro cadastrado localmente!</span>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -455,47 +586,358 @@
         </div>
     </footer>
 
-    <!-- Main Script + Search Logic -->
+    <!-- Main Script + Dynamic Library Logic -->
     <script src="script.js"></script>
     <script>
-        // Library Live Search Filter
-        const searchInput = document.getElementById('library-search');
-        const containers = document.querySelectorAll('.book-card-container');
+        // Library States
+        let baseBooks = [];
+        let libraryBooks = [];
+        let searchInput = document.getElementById('library-search');
+        const booksContainer = document.getElementById('books-container');
         const visibleCountSpan = document.getElementById('visible-count');
+        const totalCountSpan = document.getElementById('total-count');
         
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase().trim();
-                let visibleCount = 0;
+        // Librarian Panel references
+        const librarianModal = document.getElementById('librarian-modal');
+        const openLibrarianBtn = document.getElementById('open-librarian-btn');
+        const librarianCloseBtn = document.getElementById('librarian-close-btn');
+        const librarianCancelBtn = document.getElementById('librarian-cancel-btn');
+        const newBookForm = document.getElementById('new-book-form');
+        
+        // Form references
+        const bookTitleInput = document.getElementById('book-title');
+        const bookSubtitleInput = document.getElementById('book-subtitle');
+        const bookIconInput = document.getElementById('book-icon');
+        const bookPdfUrl = document.getElementById('book-pdf-url');
+        const bookPdfFile = document.getElementById('book-pdf-file');
+        const bookDescInput = document.getElementById('book-desc');
+        const fileDropArea = document.getElementById('file-drop-area');
+        const pdfSelectedBox = document.getElementById('pdf-selected-box');
+        const pdfSelectedName = document.getElementById('pdf-selected-name');
+        const btnRemovePdf = document.getElementById('btn-remove-pdf');
+        
+        // Toast refs
+        const toastBanner = document.getElementById('toast-banner');
+        const toastMessage = document.getElementById('toast-message');
+        const btnExportJson = document.getElementById('btn-export-json');
+        const btnResetLocal = document.getElementById('btn-reset-local');
+        
+        let selectedPdfBase64 = null;
+        let selectedPdfFilename = '';
+
+        // Load dynamic library data
+        async function loadLibraryData() {
+            try {
+                const response = await fetch('library-data.json');
+                if (!response.ok) {
+                    throw new Error('Falha ao obter dados da biblioteca');
+                }
+                baseBooks = await response.json();
                 
-                containers.forEach(container => {
-                    const title = container.getAttribute('data-title').toLowerCase();
-                    const subtitle = container.getAttribute('data-subtitle').toLowerCase();
-                    const desc = container.getAttribute('data-desc').toLowerCase();
-                    
-                    if (title.includes(term) || subtitle.includes(term) || desc.includes(term)) {
-                        container.style.display = 'block';
-                        visibleCount++;
-                    } else {
-                        container.style.display = 'none';
-                    }
-                });
+                // Get custom local books
+                const localCustomBooks = JSON.parse(localStorage.getItem('custom_library_books') || '[]');
                 
-                visibleCountSpan.textContent = visibleCount;
-            });
+                // Merge lists (custom books prepended)
+                libraryBooks = [...localCustomBooks, ...baseBooks];
+                
+                totalCountSpan.textContent = libraryBooks.length;
+                visibleCountSpan.textContent = libraryBooks.length;
+                
+                renderLibrary();
+                setupSearch();
+            } catch(e) {
+                console.error(e);
+                booksContainer.innerHTML = `
+                    <div class="loading-spinner" style="color: var(--error)">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        <p>Erro ao carregar a biblioteca de livros. Recarregue a página.</p>
+                    </div>
+                `;
+            }
         }
         
-        // Touch supports for mobile device flipping
-        const cards = document.querySelectorAll('.book-card');
-        cards.forEach(card => {
-            card.addEventListener('click', function(e) {
-                // If the user clicked the download button, let the link fire naturally
-                if (e.target.closest('.book-download-btn')) {
-                    return;
+        // Render Books in Grid
+        function renderLibrary(filteredList = null) {
+            const listToRender = filteredList || libraryBooks;
+            booksContainer.innerHTML = '';
+            
+            if (listToRender.length === 0) {
+                booksContainer.innerHTML = `
+                    <div class="loading-spinner">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <p>Nenhuma publicação coincide com a sua busca.</p>
+                    </div>
+                `;
+                visibleCountSpan.textContent = 0;
+                return;
+            }
+            
+            listToRender.forEach(book => {
+                const container = document.createElement('div');
+                container.className = 'book-card-container';
+                container.setAttribute('data-title', book.title);
+                container.setAttribute('data-subtitle', book.subtitle);
+                container.setAttribute('data-desc', book.description);
+                
+                const iconClass = book.icon || 'fa-book-open';
+                
+                container.innerHTML = `
+                    <div class="book-card">
+                        <!-- Front Side -->
+                        <div class="book-front">
+                            <div class="book-icon-wrapper">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <h3>${book.title}</h3>
+                            <div class="subtitle">${book.subtitle}</div>
+                            <div class="flip-hint">
+                                <i class="fas fa-arrows-rotate"></i> Ver Resumo
+                            </div>
+                        </div>
+                        <!-- Back Side -->
+                        <div class="book-back">
+                            <div class="book-back-content">
+                                <h3>${book.title}</h3>
+                                <p>${book.description}</p>
+                            </div>
+                            <a href="${book.download_url}" class="book-download-btn" download="${book.title}.pdf" target="_blank">
+                                <i class="fas fa-file-pdf"></i> Baixar PDF
+                            </a>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click/flip behavior
+                const cardElement = container.querySelector('.book-card');
+                cardElement.addEventListener('click', (e) => {
+                    if (e.target.closest('.book-download-btn')) {
+                        return; // Let the download trigger naturally
+                    }
+                    cardElement.classList.toggle('flipped');
+                });
+                
+                booksContainer.appendChild(container);
+            });
+            
+            visibleCountSpan.textContent = listToRender.length;
+        }
+        
+        // Setup instant search filters
+        function setupSearch() {
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase().trim();
+                    const filtered = libraryBooks.filter(book => {
+                        return book.title.toLowerCase().includes(term) ||
+                               book.subtitle.toLowerCase().includes(term) ||
+                               book.description.toLowerCase().includes(term);
+                    });
+                    renderLibrary(filtered);
+                });
+            }
+        }
+        
+        // UI functions for librarian panel
+        function openLibrarian() {
+            librarianModal.classList.add('active');
+            librarianModal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeLibrarian() {
+            librarianModal.classList.remove('active');
+            librarianModal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            resetForm();
+        }
+        
+        function resetForm() {
+            newBookForm.reset();
+            selectedPdfBase64 = null;
+            selectedPdfFilename = '';
+            pdfSelectedBox.style.display = 'none';
+        }
+        
+        function showToast(message, isSuccess = true) {
+            toastMessage.textContent = message;
+            toastBanner.classList.add('active');
+            const icon = toastBanner.querySelector('i');
+            if (isSuccess) {
+                icon.className = 'fas fa-circle-check';
+                toastBanner.style.background = 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)';
+            } else {
+                icon.className = 'fas fa-triangle-exclamation';
+                toastBanner.style.background = 'var(--error)';
+            }
+            setTimeout(() => toastBanner.classList.remove('active'), 4000);
+        }
+        
+        // Tabs image trigger
+        document.querySelectorAll('.pdf-tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.pdf-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const tab = btn.getAttribute('data-tab');
+                document.querySelectorAll('.pdf-source-panel').forEach(p => p.classList.remove('active'));
+                
+                if (tab === 'file') {
+                    document.getElementById('panel-pdf-file').classList.add('active');
+                    bookPdfUrl.value = '';
+                } else {
+                    document.getElementById('panel-pdf-url').classList.add('active');
+                    selectedPdfBase64 = null;
+                    selectedPdfFilename = '';
+                    pdfSelectedBox.style.display = 'none';
                 }
-                card.classList.toggle('flipped');
             });
         });
+        
+        // File selection drag & drop
+        fileDropArea.addEventListener('click', () => bookPdfFile.click());
+        
+        fileDropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileDropArea.style.borderColor = 'var(--color-primary)';
+            fileDropArea.style.backgroundColor = 'var(--color-primary-light)';
+        });
+        
+        fileDropArea.addEventListener('dragleave', () => {
+            fileDropArea.style.borderColor = 'var(--border-color)';
+            fileDropArea.style.backgroundColor = 'var(--bg-sec)';
+        });
+        
+        fileDropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDropArea.style.borderColor = 'var(--border-color)';
+            fileDropArea.style.backgroundColor = 'var(--bg-sec)';
+            if (e.dataTransfer.files.length > 0) {
+                handlePdfFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        bookPdfFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handlePdfFile(e.target.files[0]);
+            }
+        });
+        
+        btnRemovePdf.addEventListener('click', () => {
+            selectedPdfBase64 = null;
+            selectedPdfFilename = '';
+            bookPdfFile.value = '';
+            pdfSelectedBox.style.display = 'none';
+        });
+        
+        function handlePdfFile(file) {
+            if (file.type !== 'application/pdf') {
+                showToast('Por favor, envie apenas arquivos no formato PDF!', false);
+                return;
+            }
+            if (file.size > 4 * 1024 * 1024) {
+                showToast('Para salvar no navegador, o arquivo deve ser menor que 4MB!', false);
+                return;
+            }
+            
+            selectedPdfFilename = file.name;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedPdfBase64 = e.target.result;
+                pdfSelectedName.textContent = selectedPdfFilename;
+                pdfSelectedBox.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Submit handler for new book
+        newBookForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const title = bookTitleInput.value.trim();
+            const subtitle = bookSubtitleInput.value.trim();
+            const icon = bookIconInput.value;
+            const desc = bookDescInput.value.trim();
+            
+            let downloadUrl = '';
+            if (selectedPdfBase64) {
+                downloadUrl = selectedPdfBase64;
+            } else if (bookPdfUrl.value.trim()) {
+                downloadUrl = bookPdfUrl.value.trim();
+            } else {
+                showToast('É necessário fornecer um link ou fazer upload de um arquivo PDF!', false);
+                return;
+            }
+            
+            const newBook = {
+                id: Date.now(),
+                title: title,
+                subtitle: subtitle,
+                description: desc,
+                download_url: downloadUrl,
+                icon: icon
+            };
+            
+            const localCustomBooks = JSON.parse(localStorage.getItem('custom_library_books') || '[]');
+            localCustomBooks.unshift(newBook);
+            localStorage.setItem('custom_library_books', JSON.stringify(localCustomBooks));
+            
+            libraryBooks = [...localCustomBooks, ...baseBooks];
+            totalCountSpan.textContent = libraryBooks.length;
+            
+            renderLibrary();
+            closeLibrarian();
+            
+            showToast('Livro cadastrado localmente! Use "Exportar library-data.json" para salvar no computador.');
+        });
+        
+        // Export catalog JSON
+        btnExportJson.addEventListener('click', () => {
+            const localCustomBooks = JSON.parse(localStorage.getItem('custom_library_books') || '[]');
+            const bookMap = new Map();
+            baseBooks.forEach(b => bookMap.set(b.id, b));
+            localCustomBooks.forEach(b => bookMap.set(b.id, b));
+            
+            const compiled = Array.from(bookMap.values());
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(compiled, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "library-data.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+            
+            showToast('Arquivo library-data.json exportado com sucesso!');
+        });
+        
+        // Reset local books
+        btnResetLocal.addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja remover os livros adicionados neste navegador? Os 13 originais continuarão visíveis.')) {
+                localStorage.removeItem('custom_library_books');
+                libraryBooks = [...baseBooks];
+                totalCountSpan.textContent = libraryBooks.length;
+                renderLibrary();
+                showToast('Livros locais limpos!', false);
+            }
+        });
+        
+        // Bindings
+        openLibrarianBtn.addEventListener('click', openLibrarian);
+        librarianCloseBtn.addEventListener('click', closeLibrarian);
+        librarianCancelBtn.addEventListener('click', closeLibrarian);
+        
+        // Closing outside
+        librarianModal.querySelector('.librarian-modal-overlay').addEventListener('click', closeLibrarian);
+        
+        // Esc closes
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && librarianModal.classList.contains('active')) {
+                closeLibrarian();
+            }
+        });
+
+        // Bootstrap
+        window.addEventListener('DOMContentLoaded', loadLibraryData);
     </script>
 </body>
 </html>
