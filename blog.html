@@ -14,6 +14,382 @@
     
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Add Author Panel Specific Styles inline for simplicity and modularity, extending the design system -->
+    <style>
+        .author-panel-trigger-wrapper {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .btn-author {
+            background-color: var(--color-primary-light);
+            color: var(--color-primary);
+            border: 1px solid rgba(44, 93, 164, 0.2);
+            transition: var(--transition-fast);
+        }
+        
+        .btn-author:hover {
+            background-color: var(--color-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(44, 93, 164, 0.2);
+        }
+
+        /* Author Modal Styling */
+        .author-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .author-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .author-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .author-modal-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            background-color: var(--bg-main);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 2101;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid var(--border-color);
+        }
+
+        .author-modal.active .author-modal-container {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .author-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-sec);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .author-modal-header h2 {
+            font-family: var(--font-title);
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .author-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .author-modal-close:hover {
+            color: var(--error);
+        }
+
+        .author-form {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input[type="text"],
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            background-color: var(--bg-sec);
+            transition: var(--transition-fast);
+            color: var(--text-primary);
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background-color: var(--bg-main);
+            box-shadow: 0 0 0 3px rgba(44, 93, 164, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .image-source-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .image-tab-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition-fast);
+        }
+
+        .image-tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .image-source-panel {
+            display: none;
+        }
+
+        .image-source-panel.active {
+            display: block;
+        }
+
+        .image-file-drop {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            text-align: center;
+            background-color: var(--bg-sec);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .image-file-drop:hover {
+            border-color: var(--color-primary);
+            background-color: var(--color-primary-light);
+        }
+
+        .image-file-drop i {
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .image-file-drop p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .image-preview-container {
+            margin-top: 1rem;
+            height: 150px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: none;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .image-preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-remove {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition-fast);
+        }
+
+        .image-preview-remove:hover {
+            background: rgb(220, 38, 38);
+        }
+
+        /* Format Helpers */
+        .format-helpers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .btn-helper {
+            background-color: var(--bg-alt);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: var(--font-body);
+            transition: var(--transition-fast);
+        }
+
+        .btn-helper:hover {
+            background-color: var(--color-primary-light);
+            color: var(--color-primary);
+            border-color: rgba(44, 93, 164, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
+
+        .admin-sidebar {
+            background-color: var(--color-primary-light);
+            border: 1px solid rgba(44, 93, 164, 0.15);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .admin-sidebar h4 {
+            font-family: var(--font-title);
+            color: var(--color-primary);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-sidebar ol {
+            margin-left: 1.25rem;
+        }
+
+        .admin-sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Notification bubble styling */
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 3000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast-notification.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-notification i {
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -50,6 +426,11 @@
         <div class="container">
             <h1>Blog & Artigos</h1>
             <p>Pensamento sistêmico, ciência e comportamento organizacional em discussões aprofundadas.</p>
+            <div class="author-panel-trigger-wrapper">
+                <button class="btn btn-author" id="open-author-btn">
+                    <i class="fas fa-pen-nib"></i> Área do Autor
+                </button>
+            </div>
         </div>
     </section>
 
@@ -94,6 +475,104 @@
 
         </div>
     </section>
+
+    <!-- Author Panel Modal (Dynamic CMS) -->
+    <div class="author-modal" id="author-modal" role="dialog" aria-hidden="true">
+        <div class="author-modal-overlay"></div>
+        <div class="author-modal-container">
+            <div class="author-modal-header">
+                <h2><i class="fas fa-pen-nib"></i> Criar Novo Artigo</h2>
+                <button class="author-modal-close" id="author-close-btn" aria-label="Fechar painel">&times;</button>
+            </div>
+            
+            <div class="author-form">
+                <!-- Explanatory Instructions -->
+                <div class="admin-sidebar">
+                    <h4><i class="fas fa-circle-info"></i> Como publicar permanentemente?</h4>
+                    <p>Como este site é estático e hospedado no GitHub Pages, os novos artigos criados por este formulário ficam salvos <strong>temporariamente</strong> no seu navegador local.</p>
+                    <ol>
+                        <li>Preencha as informações do artigo abaixo e faça o upload da imagem.</li>
+                        <li>Clique em <strong>"Publicar Artigo (Local)"</strong> para ver o resultado no site imediatamente.</li>
+                        <li>Para publicar para todo mundo no site oficial, clique em <strong>"Exportar blog-data.json"</strong> abaixo, salve o arquivo na pasta do seu computador substituindo o anterior, e envie as alterações ao GitHub!</li>
+                    </ol>
+                    <div class="admin-actions">
+                        <button class="btn btn-secondary btn-sm" id="btn-export-json">
+                            <i class="fas fa-file-export"></i> Exportar blog-data.json
+                        </button>
+                        <button class="btn btn-danger btn-sm" id="btn-reset-local" title="Apagar apenas os posts locais salvos neste navegador">
+                            <i class="fas fa-trash-can"></i> Limpar Posts Locais
+                        </button>
+                    </div>
+                </div>
+
+                <form id="new-post-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="post-title">Título do Artigo</label>
+                            <input type="text" id="post-title" placeholder="Ex: ONA by Nexum na prática" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="post-category">Categoria</label>
+                            <input type="text" id="post-category" placeholder="Ex: Ciência das Redes, ONA, Liderança" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="post-excerpt">Resumo Curto (Aparece no cartão da lista)</label>
+                        <textarea id="post-excerpt" placeholder="Breve parágrafo explicativo sobre o artigo para atrair o leitor (limite de 200 caracteres)." maxlength="250" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Imagem de Destaque</label>
+                        
+                        <div class="image-source-tabs">
+                            <button type="button" class="image-tab-btn active" data-tab="file">Fazer Upload de Imagem</button>
+                            <button type="button" class="image-tab-btn" data-tab="url">Endereço (URL) da Web</button>
+                        </div>
+                        
+                        <div class="image-source-panel active" id="panel-image-file">
+                            <div class="image-file-drop" id="file-drop-area">
+                                <i class="fas fa-cloud-arrow-up"></i>
+                                <p>Clique aqui ou arraste para selecionar uma imagem do computador</p>
+                                <input type="file" id="post-image-file" accept="image/*" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div class="image-source-panel" id="panel-image-url">
+                            <input type="text" id="post-image-url" placeholder="https://images.unsplash.com/photo-...">
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div class="image-preview-container" id="image-preview-box">
+                            <img id="image-preview" src="" alt="Post Image Preview">
+                            <button type="button" class="image-preview-remove" id="btn-remove-preview" title="Remover imagem">&times;</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="post-content">
+                            Conteúdo do Post (Texto completo do Artigo)
+                        </label>
+                        <div class="format-helpers">
+                            <button type="button" class="btn-helper" data-tag="p">Parágrafo</button>
+                            <button type="button" class="btn-helper" data-tag="h2">Subtítulo (H2)</button>
+                            <button type="button" class="btn-helper" data-tag="strong">Negrito</button>
+                            <button type="button" class="btn-helper" data-tag="ul">Lista de Tópicos</button>
+                            <button type="button" class="btn-helper" data-tag="blockquote">Citação</button>
+                        </div>
+                        <textarea id="post-content" placeholder="Escreva aqui o corpo completo do artigo..." style="min-height: 250px;" required></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="author-cancel-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btn-publish-submit">
+                            <i class="fas fa-circle-check"></i> Publicar Artigo (Local)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Premium Article Reader Modal -->
     <div class="reader-modal" id="reader-modal" role="dialog" aria-hidden="true">
@@ -144,6 +623,11 @@
         </div>
     </div>
 
+    <!-- Toast Notification Banner -->
+    <div class="toast-notification" id="toast-banner">
+        <i class="fas fa-circle-check"></i> <span id="toast-message">Artigo publicado localmente!</span>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -190,13 +674,18 @@
     <!-- JS Logic -->
     <script src="script.js"></script>
     <script>
-        // Blog Logic Implementation
+        // Baseline posts list
+        let basePosts = [];
+        // Combined list (custom + baseline)
         let blogPosts = [];
         let filteredPosts = [];
         let activeCategory = 'all';
         let searchQuery = '';
         let currentPage = 1;
         const postsPerPage = 9; // Show 9 posts per page for optimal grid layout
+        
+        // Form states
+        let selectedImageBase64 = null;
         
         // Element references
         const postsContainer = document.getElementById('posts-container');
@@ -206,7 +695,7 @@
         const totalCountSpan = document.getElementById('total-count');
         const paginationControls = document.getElementById('pagination-controls');
         
-        // Modal Element references
+        // Reader Modal references
         const readerModal = document.getElementById('reader-modal');
         const readerTitle = document.getElementById('reader-title');
         const readerDate = document.getElementById('reader-date');
@@ -220,14 +709,45 @@
         const readingProgressBar = document.getElementById('reading-progress');
         const modalContainer = readerModal.querySelector('.reader-modal-container');
         
-        // Load data from blog-data.json
+        // Author Panel references
+        const authorModal = document.getElementById('author-modal');
+        const openAuthorBtn = document.getElementById('open-author-btn');
+        const authorCloseBtn = document.getElementById('author-close-btn');
+        const authorCancelBtn = document.getElementById('author-cancel-btn');
+        const newPostForm = document.getElementById('new-post-form');
+        
+        // Form Fields references
+        const postTitleInput = document.getElementById('post-title');
+        const postCategoryInput = document.getElementById('post-category');
+        const postExcerptInput = document.getElementById('post-excerpt');
+        const postContentInput = document.getElementById('post-content');
+        const postImageFile = document.getElementById('post-image-file');
+        const postImageUrl = document.getElementById('post-image-url');
+        const fileDropArea = document.getElementById('file-drop-area');
+        const imagePreviewBox = document.getElementById('image-preview-box');
+        const imagePreview = document.getElementById('image-preview');
+        const btnRemovePreview = document.getElementById('btn-remove-preview');
+        const toastBanner = document.getElementById('toast-banner');
+        const toastMessage = document.getElementById('toast-message');
+        
+        // Export & Reset references
+        const btnExportJson = document.getElementById('btn-export-json');
+        const btnResetLocal = document.getElementById('btn-reset-local');
+        
+        // Load data from blog-data.json & local custom posts
         async function loadBlogData() {
             try {
                 const response = await fetch('blog-data.json');
                 if (!response.ok) {
                     throw new Error('Erro ao carregar dados do blog');
                 }
-                blogPosts = await response.json();
+                basePosts = await response.json();
+                
+                // Get custom local storage posts
+                const localCustomPosts = JSON.parse(localStorage.getItem('custom_blog_posts') || '[]');
+                
+                // Combine custom posts (placed first/newest) + baseline posts
+                blogPosts = [...localCustomPosts, ...basePosts];
                 
                 // Sort posts by date_iso descending
                 blogPosts.sort((a, b) => new Date(b.date_iso) - new Date(a.date_iso));
@@ -256,10 +776,16 @@
         
         // Populate filter pills dynamically
         function setupCategoryFilters() {
+            // Keep the active one active
+            const prevActive = activeCategory;
+            
+            // Clear existing except first "Todos"
+            filtersContainer.innerHTML = `<button class="filter-pill ${prevActive === 'all' ? 'active' : ''}" data-category="all">Todos</button>`;
+            
             const categoriesSet = new Set();
             blogPosts.forEach(post => {
                 if (post.categories && post.categories.length > 0) {
-                    post.categories.forEach(cat => categoriesSet.add(cat));
+                    post.categories.forEach(cat => categoriesSet.add(cat.trim()));
                 }
             });
             
@@ -268,7 +794,7 @@
             categories.forEach(cat => {
                 if (!cat) return; // Skip empty
                 const btn = document.createElement('button');
-                btn.className = 'filter-pill';
+                btn.className = `filter-pill ${prevActive === cat ? 'active' : ''}`;
                 btn.textContent = cat;
                 btn.setAttribute('data-category', cat);
                 btn.addEventListener('click', () => {
@@ -307,7 +833,7 @@
         function filterPosts() {
             filteredPosts = blogPosts.filter(post => {
                 const matchesCategory = activeCategory === 'all' || 
-                                       (post.categories && post.categories.includes(activeCategory));
+                                       (post.categories && post.categories.some(cat => cat.trim() === activeCategory));
                                        
                 const matchesSearch = !searchQuery || 
                                      post.title.toLowerCase().includes(searchQuery) ||
@@ -405,9 +931,7 @@
             
             // Page number buttons
             for (let i = 1; i <= totalPages; i++) {
-                // Show limit buttons to prevent huge layouts if many pages
                 if (totalPages > 5 && Math.abs(currentPage - i) > 2 && i !== 1 && i !== totalPages) {
-                    // Render spacer dots once
                     if (i === 2 || i === totalPages - 1) {
                         const dots = document.createElement('span');
                         dots.className = 'pagination-spacer';
@@ -457,7 +981,6 @@
             // Set content HTML
             readerContent.innerHTML = post.content;
             
-            // Adjust local image URLs or external sources if needed
             // Clean up empty paragraphs
             const paragraphs = readerContent.querySelectorAll('p');
             paragraphs.forEach(p => {
@@ -532,6 +1055,26 @@
             });
         }
         
+        // Toast Notification Banner Utility
+        function showToast(message, isSuccess = true) {
+            toastMessage.textContent = message;
+            toastBanner.classList.add('active');
+            
+            // Icon handling
+            const icon = toastBanner.querySelector('i');
+            if (isSuccess) {
+                icon.className = 'fas fa-circle-check';
+                toastBanner.style.background = 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)';
+            } else {
+                icon.className = 'fas fa-triangle-exclamation';
+                toastBanner.style.background = 'var(--error)';
+            }
+            
+            setTimeout(() => {
+                toastBanner.classList.remove('active');
+            }, 4000);
+        }
+        
         // Handles URL hash parameters (deep linking)
         function handleUrlHash() {
             const hash = window.location.hash;
@@ -546,18 +1089,272 @@
             }
         }
         
+        // Author Panel Interaction Logic
+        function openAuthorPanel() {
+            authorModal.classList.add('active');
+            authorModal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            
+            // Set current date placeholder
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = today.toLocaleString('pt-BR', { month: 'long' });
+            const year = today.getFullYear();
+        }
+        
+        function closeAuthorPanel() {
+            authorModal.classList.remove('active');
+            authorModal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            resetForm();
+        }
+        
+        function resetForm() {
+            newPostForm.reset();
+            selectedImageBase64 = null;
+            imagePreviewBox.style.display = 'none';
+            imagePreview.src = '';
+        }
+        
+        // Handle Form Helper Buttons (Rich text simulator)
+        document.querySelectorAll('.btn-helper').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tag = btn.getAttribute('data-tag');
+                const startPos = postContentInput.selectionStart;
+                const endPos = postContentInput.selectionEnd;
+                const text = postContentInput.value;
+                const selectedText = text.substring(startPos, endPos);
+                
+                let replacement = '';
+                if (tag === 'p') replacement = `<p>${selectedText || 'Escreva o parágrafo aqui'}</p>\n`;
+                else if (tag === 'h2') replacement = `<h2>${selectedText || 'Subtítulo'}</h2>\n`;
+                else if (tag === 'strong') replacement = `<strong>${selectedText || 'texto em negrito'}</strong>`;
+                else if (tag === 'ul') replacement = `<ul class="wp-block-list">\n  <li>${selectedText || 'Tópico 1'}</li>\n  <li>Tópico 2</li>\n</ul>\n`;
+                else if (tag === 'blockquote') replacement = `<blockquote>${selectedText || 'Citação importante'}</blockquote>\n`;
+                
+                postContentInput.value = text.substring(0, startPos) + replacement + text.substring(endPos);
+                postContentInput.focus();
+                
+                // Set cursor position back
+                const newCursorPos = startPos + replacement.length;
+                postContentInput.setSelectionRange(newCursorPos, newCursorPos);
+            });
+        });
+        
+        // Handle Tab Switching for image source
+        document.querySelectorAll('.image-tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.image-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const tab = btn.getAttribute('data-tab');
+                document.querySelectorAll('.image-source-panel').forEach(panel => panel.classList.remove('active'));
+                
+                if (tab === 'file') {
+                    document.getElementById('panel-image-file').classList.add('active');
+                    postImageUrl.value = ''; // Clear other input
+                } else {
+                    document.getElementById('panel-image-url').classList.add('active');
+                    selectedImageBase64 = null; // Clear other choice
+                }
+            });
+        });
+        
+        // File Drag & Drop triggers
+        fileDropArea.addEventListener('click', () => postImageFile.click());
+        
+        fileDropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileDropArea.style.borderColor = 'var(--color-primary)';
+            fileDropArea.style.backgroundColor = 'var(--color-primary-light)';
+        });
+        
+        fileDropArea.addEventListener('dragleave', () => {
+            fileDropArea.style.borderColor = 'var(--border-color)';
+            fileDropArea.style.backgroundColor = 'var(--bg-sec)';
+        });
+        
+        fileDropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDropArea.style.borderColor = 'var(--border-color)';
+            fileDropArea.style.backgroundColor = 'var(--bg-sec)';
+            
+            if (e.dataTransfer.files.length > 0) {
+                handleImageFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        postImageFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleImageFile(e.target.files[0]);
+            }
+        });
+        
+        // URL direct input check for preview
+        postImageUrl.addEventListener('input', (e) => {
+            const url = e.target.value.trim();
+            if (url.startsWith('http')) {
+                imagePreview.src = url;
+                imagePreviewBox.style.display = 'block';
+            } else {
+                imagePreviewBox.style.display = 'none';
+            }
+        });
+        
+        // Remove Image Preview trigger
+        btnRemovePreview.addEventListener('click', () => {
+            selectedImageBase64 = null;
+            postImageUrl.value = '';
+            postImageFile.value = '';
+            imagePreviewBox.style.display = 'none';
+            imagePreview.src = '';
+        });
+        
+        // Convert and preview image file
+        function handleImageFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showToast('Por favor, selecione apenas arquivos de imagem!', false);
+                return;
+            }
+            
+            // Limit file size to 1MB to prevent localstorage bloat
+            if (file.size > 1024 * 1024) {
+                showToast('Para melhor desempenho offline, escolha imagens com menos de 1MB!', false);
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedImageBase64 = e.target.result;
+                imagePreview.src = selectedImageBase64;
+                imagePreviewBox.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Form Submission to Local Storage
+        newPostForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const title = postTitleInput.value.trim();
+            const category = postCategoryInput.value.trim();
+            const excerpt = postExcerptInput.value.trim();
+            const content = postContentInput.value.trim();
+            
+            // Image source calculation
+            let postImg = '';
+            if (selectedImageBase64) {
+                postImg = selectedImageBase64;
+            } else if (postImageUrl.value.trim()) {
+                postImg = postImageUrl.value.trim();
+            } else {
+                postImg = 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=600&auto=format&fit=crop';
+            }
+            
+            // Formulate date strings
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = today.toLocaleString('pt-BR', { month: 'long' });
+            const year = today.getFullYear();
+            const formattedDate = `${day} de ${month} de ${year}`;
+            
+            const slug = title.toLowerCase()
+                              .replace(/[^a-z0-9\s-]/g, '')
+                              .replace(/\s+/g, '-')
+                              .replace(/-+/g, '-');
+            
+            const newPost = {
+                id: Date.now(), // Unique ID
+                title: title,
+                date: formattedDate,
+                date_iso: today.toISOString(),
+                slug: slug,
+                excerpt: excerpt,
+                content: content,
+                image: postImg,
+                categories: category.split(',').map(c => c.trim()),
+                link: '#'
+            };
+            
+            // Save to localStorage
+            const localCustomPosts = JSON.parse(localStorage.getItem('custom_blog_posts') || '[]');
+            localCustomPosts.unshift(newPost); // Add at the start
+            localStorage.setItem('custom_blog_posts', JSON.stringify(localCustomPosts));
+            
+            // Reload array
+            blogPosts = [...localCustomPosts, ...basePosts];
+            blogPosts.sort((a, b) => new Date(b.date_iso) - new Date(a.date_iso));
+            
+            filteredPosts = [...blogPosts];
+            totalCountSpan.textContent = blogPosts.length;
+            
+            // Re-render
+            setupCategoryFilters();
+            filterPosts();
+            closeAuthorPanel();
+            
+            showToast('Artigo publicado localmente! Use "Exportar blog-data.json" para salvar no computador.');
+        });
+        
+        // Export updated JSON file to computer
+        btnExportJson.addEventListener('click', () => {
+            // Merge custom posts from localStorage + baseline posts
+            const localCustomPosts = JSON.parse(localStorage.getItem('custom_blog_posts') || '[]');
+            
+            // Avoid duplicates by ID
+            const postMap = new Map();
+            // Load base posts first
+            basePosts.forEach(p => postMap.set(p.id, p));
+            // Overwrite or append custom posts
+            localCustomPosts.forEach(p => postMap.set(p.id, p));
+            
+            const compiledList = Array.from(postMap.values());
+            compiledList.sort((a, b) => new Date(b.date_iso) - new Date(a.date_iso));
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(compiledList, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "blog-data.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+            
+            showToast('Arquivo blog-data.json exportado! Substitua-o na pasta do seu projeto.');
+        });
+        
+        // Clear local custom posts
+        btnResetLocal.addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja apagar todos os posts locais criados neste navegador? Os posts padrão não serão alterados.')) {
+                localStorage.removeItem('custom_blog_posts');
+                blogPosts = [...basePosts];
+                filteredPosts = [...blogPosts];
+                totalCountSpan.textContent = blogPosts.length;
+                currentPage = 1;
+                setupCategoryFilters();
+                updateBlogView();
+                showToast('Posts criados localmente limpos!', false);
+            }
+        });
+        
         // Event listeners for modal closing
         readerCloseBtn.addEventListener('click', closeArticle);
         readerFooterCloseBtn.addEventListener('click', closeArticle);
         readerShareBtn.addEventListener('click', shareArticle);
         
-        // Click outside container to close modal
-        readerModal.querySelector('.reader-modal-overlay').addEventListener('click', closeArticle);
+        // Author Panel triggers
+        openAuthorBtn.addEventListener('click', openAuthorPanel);
+        authorCloseBtn.addEventListener('click', closeAuthorPanel);
+        authorCancelBtn.addEventListener('click', closeAuthorPanel);
         
-        // Esc key closes modal
+        // Click outside container to close modals
+        readerModal.querySelector('.reader-modal-overlay').addEventListener('click', closeArticle);
+        authorModal.querySelector('.author-modal-overlay').addEventListener('click', closeAuthorPanel);
+        
+        // Esc key closes modals
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && readerModal.classList.contains('active')) {
-                closeArticle();
+            if (e.key === 'Escape') {
+                if (readerModal.classList.contains('active')) closeArticle();
+                if (authorModal.classList.contains('active')) closeAuthorPanel();
             }
         });
         
