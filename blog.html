@@ -449,12 +449,6 @@
                     </div>
                 </div>
                 
-                <!-- Category Pills (Dynamically filled) -->
-                <div class="category-filters" id="category-filters-container">
-                    <button class="filter-pill active" data-category="all">Todos</button>
-                    <!-- JavaScript will insert other categories here -->
-                </div>
-                
                 <!-- Status Stats -->
                 <div class="search-stats-container">
                     Exibindo <span id="visible-count">0</span> de <span id="total-count">0</span> artigos
@@ -690,7 +684,6 @@
         
         // Element references
         const postsContainer = document.getElementById('posts-container');
-        const filtersContainer = document.getElementById('category-filters-container');
         const searchInput = document.getElementById('blog-search');
         const visibleCountSpan = document.getElementById('visible-count');
         const totalCountSpan = document.getElementById('total-count');
@@ -756,9 +749,6 @@
                 filteredPosts = [...blogPosts];
                 totalCountSpan.textContent = blogPosts.length;
                 
-                // Populate category filters dynamically
-                setupCategoryFilters();
-                
                 // Render initial state
                 updateBlogView();
                 
@@ -775,50 +765,13 @@
             }
         }
         
-        // Populate filter pills dynamically
-        function setupCategoryFilters() {
-            // Keep the active one active
-            const prevActive = activeCategory;
-            
-            // Clear existing except first "Todos"
-            filtersContainer.innerHTML = `<button class="filter-pill ${prevActive === 'all' ? 'active' : ''}" data-category="all">Todos</button>`;
-            
-            const categoriesSet = new Set();
-            blogPosts.forEach(post => {
-                if (post.categories && post.categories.length > 0) {
-                    post.categories.forEach(cat => categoriesSet.add(cat.trim()));
-                }
-            });
-            
-            // Render pills
-            const categories = Array.from(categoriesSet).sort();
-            categories.forEach(cat => {
-                if (!cat) return; // Skip empty
-                const btn = document.createElement('button');
-                btn.className = `filter-pill ${prevActive === cat ? 'active' : ''}`;
-                btn.textContent = cat;
-                btn.setAttribute('data-category', cat);
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-                    btn.classList.add('active');
-                    activeCategory = cat;
-                    currentPage = 1;
-                    filterPosts();
-                });
-                filtersContainer.appendChild(btn);
-            });
-            
-            // Connect 'All' button click
-            const allBtn = filtersContainer.querySelector('[data-category="all"]');
-            if (allBtn) {
-                allBtn.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-                    allBtn.classList.add('active');
-                    activeCategory = 'all';
-                    currentPage = 1;
-                    filterPosts();
-                });
-            }
+        // Helper function to normalize text (lowercase, strip accents/diacritics)
+        function normalizeText(text) {
+            if (!text) return "";
+            return text.toString()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
         }
         
         // Handle Search input
@@ -830,19 +783,31 @@
             });
         }
         
-        // Main filtering logic
+        // Main filtering logic - Smart search across multiple terms and fields
         function filterPosts() {
-            filteredPosts = blogPosts.filter(post => {
-                const matchesCategory = activeCategory === 'all' || 
-                                       (post.categories && post.categories.some(cat => cat.trim() === activeCategory));
-                                       
-                const matchesSearch = !searchQuery || 
-                                     post.title.toLowerCase().includes(searchQuery) ||
-                                     post.excerpt.toLowerCase().includes(searchQuery) ||
-                                     post.content.toLowerCase().includes(searchQuery);
-                                     
-                return matchesCategory && matchesSearch;
-            });
+            if (!searchQuery) {
+                filteredPosts = [...blogPosts];
+            } else {
+                // Split query into terms/keywords, normalize each
+                const terms = searchQuery
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .split(/\s+/)
+                    .filter(term => term.length > 0);
+                
+                filteredPosts = blogPosts.filter(post => {
+                    const title = normalizeText(post.title);
+                    const excerpt = normalizeText(post.excerpt);
+                    const content = normalizeText(post.content);
+                    const categories = post.categories ? post.categories.map(c => normalizeText(c)).join(" ") : "";
+                    
+                    const fullText = `${title} ${excerpt} ${content} ${categories}`;
+                    
+                    // Verify that every search term is present somewhere in the combined text
+                    return terms.every(term => fullText.includes(term));
+                });
+            }
             
             updateBlogView();
         }
