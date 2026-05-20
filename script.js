@@ -401,6 +401,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initLanguageSelector();
+
+    // 7. Admin Mode Authorization (Neuroredes Staff Only)
+    function checkAdminAuth() {
+        const hashPassword = (str) => {
+            let hash = 5381;
+            for (let i = 0; i < str.length; i++) {
+                hash = (hash * 33) ^ str.charCodeAt(i);
+            }
+            return (hash >>> 0).toString(16);
+        };
+        
+        // Target hash for "neuroredes2026"
+        const targetHash = "52528c85";
+        
+        let isAdmin = sessionStorage.getItem('neuroredes_admin') === 'true';
+        
+        // Check url search query
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('admin')) {
+            const adminVal = urlParams.get('admin');
+            if (adminVal === 'true' || adminVal === '1') {
+                if (!isAdmin) {
+                    const pass = prompt("Digite a senha de administrador da Neuroredes:");
+                    if (pass && hashPassword(pass) === targetHash) {
+                        sessionStorage.setItem('neuroredes_admin', 'true');
+                        isAdmin = true;
+                        alert("Modo Administrador ativado com sucesso!");
+                    } else {
+                        alert("Senha incorreta! Acesso ao painel administrativo negado.");
+                    }
+                }
+                
+                // Clean the query parameter from the URL bar silently
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+            }
+        }
+        
+        // Show administrative buttons if authenticated
+        if (isAdmin) {
+            const adminTriggers = document.querySelectorAll('.author-panel-trigger-wrapper, .librarian-panel-trigger-wrapper');
+            adminTriggers.forEach(el => {
+                el.style.setProperty('display', 'flex', 'important');
+            });
+        }
+    }
+
+    checkAdminAuth();
 });
 
 // Flip-card helper for touch devices (toggles flipped class on click)
