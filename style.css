@@ -172,16 +172,25 @@ img {
 }
 
 .header.scrolled {
-    padding: 0.5rem 0;
+    padding: 0.25rem 0;
     box-shadow: var(--shadow-md);
     background-color: rgba(255, 255, 255, 0.95);
+}
+
+.header.scrolled .nav-container {
+    height: 70px;
+}
+
+.header.scrolled .logo img {
+    height: 48px;
 }
 
 .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 75px;
+    height: 85px;
+    transition: height var(--transition-normal);
 }
 
 .logo {
@@ -190,7 +199,7 @@ img {
 }
 
 .logo img {
-    height: 50px;
+    height: 58px;
     width: auto;
     transition: var(--transition-normal);
 }
@@ -198,23 +207,35 @@ img {
 .nav-links {
     display: flex;
     list-style: none;
-    align-items: center;
-    gap: 1.5rem;
+    align-items: stretch;
+    gap: 1.15rem;
+    height: 100%;
+}
+
+.nav-links li {
+    display: flex;
+    align-items: stretch;
 }
 
 .nav-links a {
     color: var(--text-secondary);
     font-weight: 500;
-    font-size: 0.95rem;
-    padding: 0.5rem 0.75rem;
+    font-size: 1.05rem; /* Aumentado de 0.95rem */
+    padding: 0.25rem 0.6rem;
     border-radius: var(--radius-sm);
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.25;
+    height: 100%;
 }
 
 .nav-links a::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: 12px;
     left: 50%;
     width: 0;
     height: 2px;
@@ -239,6 +260,9 @@ img {
     padding: 0.6rem 1.25rem;
     border-radius: var(--radius-full);
     box-shadow: 0 4px 10px rgba(44, 93, 164, 0.2);
+    align-self: center;
+    display: inline-flex;
+    height: auto;
 }
 
 .nav-links a.btn-nav::after {
@@ -1160,13 +1184,13 @@ textarea.form-control {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1150px) {
     .menu-toggle {
         display: block;
     }
     .nav-links {
         position: absolute;
-        top: 75px;
+        top: 85px;
         left: 0;
         width: 100%;
         background-color: var(--bg-main);
@@ -1180,7 +1204,7 @@ textarea.form-control {
         z-index: 999;
     }
     .nav-links.active {
-        max-height: 400px;
+        max-height: 600px;
     }
     .nav-links li {
         width: 100%;
@@ -1188,6 +1212,8 @@ textarea.form-control {
     }
     .nav-links a {
         display: block;
+        height: auto;
+        min-height: auto;
         padding: 1rem 0;
         border-bottom: 1px solid rgba(226, 232, 240, 0.5);
     }
