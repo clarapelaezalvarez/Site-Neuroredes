@@ -2264,3 +2264,108 @@ iframe[class*="translate"] {
         right: auto;
     }
 }
+
+/* Testimonials (Depoimentos) Section */
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin-top: 2rem;
+}
+
+.testimonial-card {
+    background-color: var(--bg-main);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem 2.5rem 2.5rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all var(--transition-normal);
+}
+
+.testimonial-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    opacity: 0.8;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl), var(--shadow-glow);
+    border-color: rgba(36, 168, 207, 0.25);
+}
+
+.testimonial-quote-icon {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 2.5rem;
+    color: rgba(36, 168, 207, 0.1);
+}
+
+.testimonial-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-secondary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1.2rem;
+    font-family: var(--font-title);
+    border: 2px solid var(--border-color);
+}
+
+.author-info h4 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.author-info p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+/* Responsive adjustment for Testimonials */
+@media (max-width: 900px) {
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .testimonial-card {
+        padding: 2.5rem 2rem 2rem 2rem;
+    }
+}

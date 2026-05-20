@@ -379,13 +379,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function changeLanguage(lang) {
-        // 1. Set Translate Cookie
-        const cookieVal = lang === 'pt' ? '' : `/pt/${lang}`;
-        document.cookie = `googtrans=${cookieVal}; path=/`;
-        document.cookie = `googtrans=${cookieVal}; path=/; domain=${window.location.hostname}`;
-        
         // Also store in localStorage as backup
         localStorage.setItem('neuroredes_lang', lang);
+        
+        if (lang === 'pt') {
+            // Properly expire the googtrans cookie for all domains and subdomains
+            const domains = [
+                window.location.hostname,
+                '.' + window.location.hostname,
+                window.location.hostname.split('.').slice(-2).join('.')
+            ];
+            
+            domains.forEach(domain => {
+                document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
+                document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+            });
+            
+            // Reload page to restore original state completely
+            window.location.reload();
+            return;
+        }
+        
+        // 1. Set Translate Cookie for other languages
+        const cookieVal = `/pt/${lang}`;
+        document.cookie = `googtrans=${cookieVal}; path=/`;
+        document.cookie = `googtrans=${cookieVal}; path=/; domain=${window.location.hostname}`;
+        document.cookie = `googtrans=${cookieVal}; path=/; domain=.${window.location.hostname}`;
         
         // 2. Trigger Google Translate Widget
         const selectEl = document.querySelector('.goog-te-combo');
