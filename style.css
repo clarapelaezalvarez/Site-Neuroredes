@@ -2123,3 +2123,133 @@ textarea.form-control {
         gap: 2.5rem;
     }
 }
+
+/* ==========================================================================
+   Language Selector and Google Translate Custom Integration
+   ========================================================================== */
+
+/* Language Selector Li */
+.lang-selector-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.lang-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.lang-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: var(--transition-fast);
+}
+
+.lang-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.lang-btn i.fa-globe {
+    font-size: 1rem;
+}
+
+.lang-btn i.fa-chevron-down {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.lang-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background-color: white;
+    min-width: 140px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    z-index: 1000;
+    padding: 0.5rem 0;
+    overflow: hidden;
+}
+
+.lang-dropdown-content a {
+    color: var(--text-primary);
+    padding: 0.6rem 1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition-fast);
+    line-height: 1;
+    width: 100%;
+}
+
+.lang-dropdown-content a::after {
+    display: none !important; /* Hide standard nav hover underline line */
+}
+
+.lang-dropdown-content a:hover {
+    background-color: var(--bg-alt);
+    color: var(--color-primary);
+}
+
+.lang-dropdown-content a img {
+    width: 18px;
+    height: auto;
+    border-radius: 2px;
+}
+
+/* Show dropdown on hover */
+.lang-dropdown:hover .lang-dropdown-content,
+.lang-dropdown.active .lang-dropdown-content {
+    display: block;
+}
+
+/* Google Translate Style Overrides to keep the site clean */
+body {
+    top: 0 !important;
+}
+
+.goog-te-banner-frame.skiptranslate, 
+.goog-te-banner-frame,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+    display: none !important;
+}
+
+.goog-text-highlight {
+    background: none !important;
+    box-shadow: none !important;
+}
+
+/* Responsive adjustment for Mobile Hamburger Menu */
+@media (max-width: 1150px) {
+    .lang-selector-container {
+        justify-content: center;
+        margin: 0.5rem auto;
+        width: 100%;
+    }
+    .lang-dropdown {
+        width: auto;
+    }
+    .lang-dropdown-content {
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+    }
+}

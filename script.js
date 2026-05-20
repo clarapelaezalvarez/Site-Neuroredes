@@ -261,6 +261,146 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 1500);
         });
     }
+
+    // 6. Language Translation Setup (Google Translate widget integration)
+    function initLanguageSelector() {
+        const navLinks = document.querySelector('.nav-links');
+        if (!navLinks) return;
+
+        // 1. Create and append the language selector markup if not already present
+        if (!document.querySelector('.lang-selector-container')) {
+            const li = document.createElement('li');
+            li.className = 'lang-selector-container';
+            li.innerHTML = `
+                <div class="lang-dropdown">
+                    <button class="lang-btn" aria-label="Alterar idioma" id="langBtn">
+                        <i class="fas fa-globe"></i> <span class="current-lang">PT</span> <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="lang-dropdown-content" id="langDropdown">
+                        <a href="#" data-lang="pt"><img src="https://flagcdn.com/w20/br.png" alt="Português"> PT</a>
+                        <a href="#" data-lang="en"><img src="https://flagcdn.com/w20/us.png" alt="English"> EN</a>
+                        <a href="#" data-lang="es"><img src="https://flagcdn.com/w20/es.png" alt="Español"> ES</a>
+                        <a href="#" data-lang="de"><img src="https://flagcdn.com/w20/de.png" alt="Deutsch"> DE</a>
+                        <a href="#" data-lang="zh-CN"><img src="https://flagcdn.com/w20/cn.png" alt="中文"> ZH</a>
+                    </div>
+                </div>
+            `;
+            
+            // Insert before Fale Conosco button (which is the last item in navLinks)
+            const contactItem = navLinks.querySelector('a.btn-nav')?.parentNode;
+            if (contactItem) {
+                navLinks.insertBefore(li, contactItem);
+            } else {
+                navLinks.appendChild(li);
+            }
+        }
+        
+        // 2. Create the hidden google translate element container
+        if (!document.getElementById('google_translate_element')) {
+            const div = document.createElement('div');
+            div.id = 'google_translate_element';
+            div.style.display = 'none';
+            document.body.appendChild(div);
+        }
+
+        // 3. Inject Google Translate JS SDK if not present
+        if (!document.querySelector('script[src*="translate.google.com"]')) {
+            // Define the global callback function that google translate calls
+            window.googleTranslateElementInit = function() {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'pt',
+                    includedLanguages: 'en,es,de,zh-CN',
+                    autoDisplay: false
+                }, 'google_translate_element');
+                
+                // Re-apply language selection UI on load if cookie exists
+                setTimeout(() => {
+                    const activeLang = getActiveLang();
+                    updateLangLabel(activeLang);
+                }, 500);
+            };
+            
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            document.body.appendChild(script);
+        }
+        
+        // 4. Setup Event Listeners
+        const selectorLi = document.querySelector('.lang-selector-container');
+        if (selectorLi) {
+            const dropdown = selectorLi.querySelector('.lang-dropdown');
+            const langBtn = selectorLi.querySelector('#langBtn');
+            
+            // Toggle active state on click (mobile support)
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('active');
+            });
+            
+            // Close dropdown on click outside
+            document.addEventListener('click', () => {
+                dropdown.classList.remove('active');
+            });
+            
+            // Handle language item clicks
+            selectorLi.querySelectorAll('.lang-dropdown-content a').forEach(a => {
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const lang = a.getAttribute('data-lang');
+                    changeLanguage(lang);
+                    dropdown.classList.remove('active');
+                });
+            });
+        }
+        
+        // Update initial label on page load from cookie
+        const initialLang = getActiveLang();
+        updateLangLabel(initialLang);
+    }
+
+    // Helpers for Translation
+    function getActiveLang() {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; googtrans=`);
+        if (parts.length === 2) {
+            const val = parts.pop().split(';').shift();
+            const lang = val.split('/').pop();
+            return lang || 'pt';
+        }
+        return 'pt';
+    }
+
+    function updateLangLabel(lang) {
+        const labelSpan = document.querySelector('.current-lang');
+        if (labelSpan) {
+            labelSpan.textContent = lang.toUpperCase().split('-')[0];
+        }
+    }
+
+    function changeLanguage(lang) {
+        // 1. Set Translate Cookie
+        const cookieVal = lang === 'pt' ? '' : `/pt/${lang}`;
+        document.cookie = `googtrans=${cookieVal}; path=/`;
+        document.cookie = `googtrans=${cookieVal}; path=/; domain=${window.location.hostname}`;
+        
+        // Also store in localStorage as backup
+        localStorage.setItem('neuroredes_lang', lang);
+        
+        // 2. Trigger Google Translate Widget
+        const selectEl = document.querySelector('.goog-te-combo');
+        if (selectEl) {
+            selectEl.value = lang;
+            selectEl.dispatchEvent(new Event('change'));
+        } else {
+            // If element is not loaded, reload to apply cookie
+            window.location.reload();
+        }
+        
+        updateLangLabel(lang);
+    }
+
+    initLanguageSelector();
 });
 
 // Flip-card helper for touch devices (toggles flipped class on click)
