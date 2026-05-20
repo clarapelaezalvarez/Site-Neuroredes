@@ -1316,7 +1316,7 @@ textarea.form-control {
     pointer-events: none;
 }
 
-#library-search {
+#library-search, #blog-search {
     width: 100%;
     padding: 0.85rem 1.25rem 0.85rem 3rem;
     border-radius: var(--radius-full);
@@ -1328,7 +1328,7 @@ textarea.form-control {
     transition: var(--transition-normal);
 }
 
-#library-search:focus {
+#library-search:focus, #blog-search:focus {
     outline: none;
     border-color: var(--color-primary);
     background-color: var(--bg-main);
@@ -2221,15 +2221,26 @@ textarea.form-control {
 }
 
 /* Google Translate Style Overrides to keep the site clean */
-body {
+html {
     top: 0 !important;
+    margin-top: 0 !important;
 }
 
+body {
+    top: 0 !important;
+    margin-top: 0 !important;
+    position: static !important;
+}
+
+/* Hide Google Translate top bar frame completely */
 .goog-te-banner-frame.skiptranslate, 
 .goog-te-banner-frame,
 #goog-gt-tt,
-.goog-te-balloon-frame {
+.goog-te-balloon-frame,
+iframe.skiptranslate,
+iframe[class*="translate"] {
     display: none !important;
+    visibility: hidden !important;
 }
 
 .goog-text-highlight {
