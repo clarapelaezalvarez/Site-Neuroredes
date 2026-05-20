@@ -255,14 +255,16 @@ img {
 }
 
 .nav-links a.btn-nav {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: white;
-    padding: 0.6rem 1.25rem;
-    border-radius: var(--radius-full);
-    box-shadow: 0 4px 10px rgba(44, 93, 164, 0.2);
+    border: 2px solid var(--color-primary);
+    background: transparent;
+    color: var(--color-primary);
+    font-weight: 600;
+    padding: 0.45rem 1.3rem;
+    border-radius: 50px; /* Destaque ovalado */
     align-self: center;
     display: inline-flex;
     height: auto;
+    transition: var(--transition-fast);
 }
 
 .nav-links a.btn-nav::after {
@@ -270,9 +272,10 @@ img {
 }
 
 .nav-links a.btn-nav:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(44, 93, 164, 0.3);
+    background: var(--color-primary);
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 93, 164, 0.18);
 }
 
 .menu-toggle {
@@ -1223,7 +1226,15 @@ textarea.form-control {
     .nav-links a.btn-nav {
         margin: 1rem auto;
         width: 80%;
-        border-radius: var(--radius-full);
+        border-radius: 50px;
+        background: var(--color-primary);
+        color: white;
+        text-align: center;
+        justify-content: center;
+    }
+    .nav-links a.btn-nav:hover {
+        background: var(--color-primary-dark);
+        color: white;
     }
     
     .hero {
