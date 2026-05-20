@@ -803,7 +803,16 @@
                     const fullText = `${title} ${excerpt} ${content} ${categories}`;
                     
                     // Verify that every search term is present somewhere in the combined text
-                    return terms.every(term => fullText.includes(term));
+                    return terms.every(term => {
+                        if (term.length <= 3) {
+                            // Boundary match for short terms (like 'ona', 'ia') to avoid partial matching (e.g. 'relacional')
+                            const escapedTerm = term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                            const regex = new RegExp('\\b' + escapedTerm, 'i');
+                            return regex.test(fullText);
+                        } else {
+                            return fullText.includes(term);
+                        }
+                    });
                 });
             }
             
@@ -1297,7 +1306,6 @@
                 filteredPosts = [...blogPosts];
                 totalCountSpan.textContent = blogPosts.length;
                 currentPage = 1;
-                setupCategoryFilters();
                 updateBlogView();
                 showToast('Posts criados localmente limpos!', false);
             }

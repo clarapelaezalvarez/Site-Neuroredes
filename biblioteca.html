@@ -718,15 +718,50 @@
             visibleCountSpan.textContent = listToRender.length;
         }
         
+        // Helper function to normalize text (lowercase, strip accents/diacritics)
+        function normalizeText(text) {
+            if (!text) return "";
+            return text.toString()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        }
+
         // Setup instant search filters
         function setupSearch() {
             if (searchInput) {
                 searchInput.addEventListener('input', (e) => {
-                    const term = e.target.value.toLowerCase().trim();
+                    const query = e.target.value.toLowerCase().trim();
+                    if (!query) {
+                        renderLibrary(libraryBooks);
+                        return;
+                    }
+                    
+                    // Split query into terms/keywords, normalize each
+                    const terms = query
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .split(/\s+/)
+                        .filter(term => term.length > 0);
+                        
                     const filtered = libraryBooks.filter(book => {
-                        return book.title.toLowerCase().includes(term) ||
-                               book.subtitle.toLowerCase().includes(term) ||
-                               book.description.toLowerCase().includes(term);
+                        const title = normalizeText(book.title);
+                        const subtitle = normalizeText(book.subtitle);
+                        const description = normalizeText(book.description);
+                        
+                        const fullText = `${title} ${subtitle} ${description}`;
+                        
+                        // Verify that every search term is present somewhere in the combined text
+                        return terms.every(term => {
+                            if (term.length <= 3) {
+                                // Boundary match for short terms (like 'ona', 'ia') to avoid partial matching (e.g. 'relacional')
+                                const escapedTerm = term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                                const regex = new RegExp('\\b' + escapedTerm, 'i');
+                                return regex.test(fullText);
+                            } else {
+                                return fullText.includes(term);
+                            }
+                        });
                     });
                     renderLibrary(filtered);
                 });
