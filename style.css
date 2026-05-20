@@ -230,6 +230,7 @@ img {
     text-align: center;
     line-height: 1.25;
     height: 100%;
+    white-space: nowrap;
 }
 
 .nav-links a::after {
