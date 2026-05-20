@@ -597,6 +597,7 @@
                 
                 <div class="reader-meta">
                     <span class="reader-date" id="reader-date">17 de Abril de 2026</span>
+                    <span class="reader-author-label">Por <strong id="reader-author">Clara P. Alvarez</strong></span>
                     <span class="reader-category-pill" id="reader-category">Sem categoria</span>
                 </div>
                 
@@ -693,6 +694,7 @@
         const readerModal = document.getElementById('reader-modal');
         const readerTitle = document.getElementById('reader-title');
         const readerDate = document.getElementById('reader-date');
+        const readerAuthor = document.getElementById('reader-author');
         const readerCategory = document.getElementById('reader-category');
         const readerContent = document.getElementById('reader-content');
         const readerFeaturedImg = document.getElementById('reader-featured-img');
@@ -859,7 +861,7 @@
                     <span class="post-card-category">${categoryLabel}</span>
                 </div>
                 <div class="post-card-content">
-                    <div class="post-card-date">${post.date}</div>
+                    <div class="post-card-date">${post.date} &bull; Por <strong>${post.author || 'Clara P. Alvarez'}</strong></div>
                     <h3 class="post-card-title">${post.title}</h3>
                     <p class="post-card-excerpt">${post.excerpt}</p>
                     <button class="post-card-btn">Ler Artigo <i class="fas fa-arrow-right"></i></button>
@@ -940,6 +942,9 @@
             activePost = post;
             readerTitle.textContent = post.title;
             readerDate.textContent = post.date;
+            if (readerAuthor) {
+                readerAuthor.textContent = post.author || 'Clara P. Alvarez';
+            }
             
             const categoryLabel = post.categories && post.categories.length > 0 ? post.categories.join(', ') : 'Sem categoria';
             readerCategory.textContent = categoryLabel;
@@ -1239,6 +1244,7 @@
                 content: content,
                 image: postImg,
                 categories: category.split(',').map(c => c.trim()),
+                author: 'Clara P. Alvarez',
                 link: '#'
             };
             
@@ -1255,7 +1261,6 @@
             totalCountSpan.textContent = blogPosts.length;
             
             // Re-render
-            setupCategoryFilters();
             filterPosts();
             closeAuthorPanel();
             
