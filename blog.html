@@ -589,7 +589,7 @@
             <article class="reader-article">
                 <!-- Featured Image -->
                 <div class="reader-featured-image-wrapper" id="reader-img-wrapper">
-                    <img id="reader-featured-img" src="" alt="Featured Image">
+                    <img id="reader-featured-img" src="" alt="Featured Image" referrerpolicy="no-referrer">
                 </div>
                 
                 <div class="reader-meta">
@@ -725,13 +725,19 @@
         const btnExportJson = document.getElementById('btn-export-json');
         const btnResetLocal = document.getElementById('btn-reset-local');
         
-        // Helper function to deduplicate and sort posts
+        // Helper function to deduplicate and sort posts by slug (or id if slug is missing)
         function getMergedPosts(localPosts, baselinePosts) {
             const postMap = new Map();
             // Load base posts first
-            baselinePosts.forEach(p => postMap.set(p.id, p));
+            baselinePosts.forEach(p => {
+                const key = p.slug || p.id;
+                postMap.set(key, p);
+            });
             // Overwrite or append with custom posts
-            localPosts.forEach(p => postMap.set(p.id, p));
+            localPosts.forEach(p => {
+                const key = p.slug || p.id;
+                postMap.set(key, p);
+            });
             
             const compiledList = Array.from(postMap.values());
             // Sort posts by date_iso descending
@@ -890,7 +896,7 @@
             
             card.innerHTML = `
                 <div class="post-card-image-wrapper">
-                    <img src="${imgUrl}" alt="${post.title}" loading="lazy" onerror="this.src='${defaultImage}'">
+                    <img src="${imgUrl}" alt="${post.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='${defaultImage}'">
                     <span class="post-card-category">${categoryLabel}</span>
                 </div>
                 <div class="post-card-content">
