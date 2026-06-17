@@ -725,6 +725,38 @@
         const btnExportJson = document.getElementById('btn-export-json');
         const btnResetLocal = document.getElementById('btn-reset-local');
         
+        // Helper function to deduplicate and sort posts
+        function getMergedPosts(localPosts, baselinePosts) {
+            const postMap = new Map();
+            // Load base posts first
+            baselinePosts.forEach(p => postMap.set(p.id, p));
+            // Overwrite or append with custom posts
+            localPosts.forEach(p => postMap.set(p.id, p));
+            
+            const compiledList = Array.from(postMap.values());
+            // Sort posts by date_iso descending
+            compiledList.sort((a, b) => new Date(b.date_iso) - new Date(a.date_iso));
+            return compiledList;
+        }
+
+        // Helper function to download updated blog-data.json
+        function triggerJsonDownload() {
+            const localCustomPosts = JSON.parse(localStorage.getItem('custom_blog_posts') || '[]');
+            const compiledList = getMergedPosts(localCustomPosts, basePosts);
+            
+            const jsonString = JSON.stringify(compiledList, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", url);
+            downloadAnchor.setAttribute("download", "blog-data.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+            URL.revokeObjectURL(url);
+        }
+
         // Load data from blog-data.json & local custom posts
         async function loadBlogData() {
             try {
@@ -737,11 +769,8 @@
                 // Get custom local storage posts
                 const localCustomPosts = JSON.parse(localStorage.getItem('custom_blog_posts') || '[]');
                 
-                // Combine custom posts (placed first/newest) + baseline posts
-                blogPosts = [...localCustomPosts, ...basePosts];
-                
-                // Sort posts by date_iso descending
-                blogPosts.sort((a, b) => new Date(b.date_iso) - new Date(a.date_iso));
+                // Combine custom posts (placed first/newest) + baseline posts without duplicates
+                blogPosts = getMergedPosts(localCustomPosts, basePosts);
                 
                 filteredPosts = [...blogPosts];
                 totalCountSpan.textContent = blogPosts.length;
@@ -1257,9 +1286,8 @@
             localCustomPosts.unshift(newPost); // Add at the start
             localStorage.setItem('custom_blog_posts', JSON.stringify(localCustomPosts));
             
-            // Reload array
-            blogPosts = [...localCustomPosts, ...basePosts];
-            blogPosts.sort((a, b) => new Date(b.date_iso) - new Date(a.date_iso));
+            // Reload array without duplicates
+            blogPosts = getMergedPosts(localCustomPosts, basePosts);
             
             filteredPosts = [...blogPosts];
             totalCountSpan.textContent = blogPosts.length;
@@ -1268,32 +1296,15 @@
             filterPosts();
             closeAuthorPanel();
             
-            showToast('Artigo publicado localmente! Use "Exportar blog-data.json" para salvar no computador.');
+            // Trigger automatic download
+            triggerJsonDownload();
+            
+            showToast('Artigo publicado! O arquivo blog-data.json foi baixado automaticamente.');
         });
         
         // Export updated JSON file to computer
         btnExportJson.addEventListener('click', () => {
-            // Merge custom posts from localStorage + baseline posts
-            const localCustomPosts = JSON.parse(localStorage.getItem('custom_blog_posts') || '[]');
-            
-            // Avoid duplicates by ID
-            const postMap = new Map();
-            // Load base posts first
-            basePosts.forEach(p => postMap.set(p.id, p));
-            // Overwrite or append custom posts
-            localCustomPosts.forEach(p => postMap.set(p.id, p));
-            
-            const compiledList = Array.from(postMap.values());
-            compiledList.sort((a, b) => new Date(b.date_iso) - new Date(a.date_iso));
-            
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(compiledList, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "blog-data.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            document.body.removeChild(downloadAnchor);
-            
+            triggerJsonDownload();
             showToast('Arquivo blog-data.json exportado! Substitua-o na pasta do seu projeto.');
         });
         
