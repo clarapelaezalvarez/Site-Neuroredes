@@ -884,6 +884,28 @@
             renderPaginationControls();
         }
         
+        // Helper to parse categories into clean individual strings
+        function getParsedCategories(categories) {
+            if (!categories) return [];
+            let items = [];
+            if (Array.isArray(categories)) {
+                categories.forEach(cat => {
+                    if (typeof cat === 'string') {
+                        cat.split(/[,;]+/).forEach(c => {
+                            const trimmed = c.trim();
+                            if (trimmed) items.push(trimmed);
+                        });
+                    }
+                });
+            } else if (typeof categories === 'string') {
+                categories.split(/[,;]+/).forEach(c => {
+                    const trimmed = c.trim();
+                    if (trimmed) items.push(trimmed);
+                });
+            }
+            return items;
+        }
+
         // Create HTML elements for a card
         function createPostCard(post) {
             const card = document.createElement('article');
@@ -892,7 +914,8 @@
             const defaultImage = 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=600&auto=format&fit=crop';
             const imgUrl = post.image || defaultImage;
             
-            const categoryLabel = post.categories && post.categories.length > 0 ? post.categories[0] : 'Sem categoria';
+            const categories = getParsedCategories(post.categories);
+            const categoryLabel = categories.length > 0 ? categories[0] : 'Sem categoria';
             
             card.innerHTML = `
                 <div class="post-card-image-wrapper">
@@ -985,7 +1008,8 @@
                 readerAuthor.textContent = post.author || 'Clara P. Alvarez';
             }
             
-            const categoryLabel = post.categories && post.categories.length > 0 ? post.categories.join(', ') : 'Sem categoria';
+            const categories = getParsedCategories(post.categories);
+            const categoryLabel = categories.length > 0 ? categories.join(' • ') : 'Sem categoria';
             readerCategory.textContent = categoryLabel;
             
             // Set content HTML
@@ -1282,7 +1306,7 @@
                 excerpt: excerpt,
                 content: content,
                 image: postImg,
-                categories: category.split(',').map(c => c.trim()),
+                categories: category.split(/[,;]+/).map(c => c.trim()).filter(Boolean),
                 author: 'Clara P. Alvarez',
                 link: '#'
             };
