@@ -1530,20 +1530,18 @@ textarea.form-control {
 }
 
 .post-card-category {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--color-primary);
-    font-size: 0.75rem;
+    display: inline-block;
+    align-self: flex-start;
+    background-color: var(--color-secondary-light);
+    color: var(--color-secondary-dark);
+    font-size: 0.72rem;
     font-weight: 700;
-    padding: 0.35rem 0.85rem;
+    padding: 0.3rem 0.8rem;
     border-radius: var(--radius-full);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    box-shadow: var(--shadow-sm);
-    z-index: 2;
-    max-width: calc(100% - 2rem);
+    margin-bottom: 0.75rem;
+    max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

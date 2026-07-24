@@ -920,9 +920,9 @@
             card.innerHTML = `
                 <div class="post-card-image-wrapper">
                     <img src="${imgUrl}" alt="${post.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='${defaultImage}'">
-                    <span class="post-card-category">${categoryLabel}</span>
                 </div>
                 <div class="post-card-content">
+                    <span class="post-card-category">${categoryLabel}</span>
                     <div class="post-card-date">${post.date} &bull; Por <strong>${post.author || 'Clara P. Alvarez'}</strong></div>
                     <h3 class="post-card-title">${post.title}</h3>
                     <p class="post-card-excerpt">${post.excerpt}</p>
