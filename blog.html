@@ -663,7 +663,7 @@
     </footer>
 
     <!-- JS Logic & Data -->
-    <script src="blog-data.js?v=1.0"></script>
+    <script src="blog-data.js?v=2.0"></script>
     <script src="script.js?v=1.4"></script>
     <script>
         // Baseline posts list
@@ -1037,6 +1037,18 @@
             
             // Set content HTML
             readerContent.innerHTML = formatPostContent(post.content);
+            
+            // Runtime Guard: Clean up any leading element repeating the post title
+            if (post.title) {
+                const normTitle = post.title.replace(/[^\w\s]/g, '').toLowerCase().trim();
+                const firstChild = readerContent.firstElementChild;
+                if (firstChild && normTitle.length > 5) {
+                    const childText = firstChild.textContent.replace(/[^\w\s]/g, '').toLowerCase().trim();
+                    if (childText === normTitle || (childText.length > 5 && (childText === normTitle || normTitle.startsWith(childText) || childText.startsWith(normTitle)))) {
+                        firstChild.remove();
+                    }
+                }
+            }
             
             // Clean up empty paragraphs
             const paragraphs = readerContent.querySelectorAll('p');
