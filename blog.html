@@ -913,37 +913,13 @@
         // Helper to format raw text content into structured HTML if HTML tags are missing
         function formatPostContent(content) {
             if (!content) return '';
-            if (/<(?:p|h[1-6]|div|br|ul|ol|blockquote)\b[^>]*>/i.test(content)) {
+            // If content already contains HTML tags, return as-is
+            if (/<(?:p|h[1-6]|div|br|ul|ol|table|blockquote)\b[^>]*>/i.test(content)) {
                 return content;
             }
+            // Fallback for raw text: wrap double-linebreak blocks into <p>
             const blocks = content.split(/\r?\n\s*\r?\n/);
-            let html = '';
-            blocks.forEach(block => {
-                const trimmed = block.trim();
-                if (!trimmed) return;
-                if (/\n?\s*[•\-\*]\s+/.test(trimmed)) {
-                    const items = trimmed.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-                    html += '<ul class="wp-block-list">\n';
-                    items.forEach(it => {
-                        const clean = it.replace(/^[•\-\*]\s*/, '');
-                        html += `  <li>${clean}</li>\n`;
-                    });
-                    html += '</ul>\n';
-                    return;
-                }
-                if (/^(?:[0-9]+\.(?:[0-9]+\.?)?\s+[A-ZÁÀÂÃÉÈÊÍÓÒÔÕÚÇ\s]{3,}|Resumo|RESUMO|REFERÊNCIAS|REFERENCIAS)/.test(trimmed)) {
-                    const lines = trimmed.split(/\r?\n/);
-                    html += `<h2>${lines[0].trim()}</h2>\n`;
-                    if (lines.length > 1) {
-                        const rest = lines.slice(1).join(' ').trim();
-                        if (rest) html += `<p>${rest}</p>\n`;
-                    }
-                    return;
-                }
-                const paragraphText = trimmed.split(/\r?\n/).map(l => l.trim()).join(' ');
-                html += `<p>${paragraphText}</p>\n`;
-            });
-            return html;
+            return blocks.map(b => `<p>${b.trim()}</p>`).join('\n');
         }
 
         // Create HTML elements for a card
