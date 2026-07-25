@@ -741,7 +741,11 @@
             
             const compiledList = Array.from(postMap.values());
             // Sort posts by date_iso descending
-            compiledList.sort((a, b) => new Date(b.date_iso) - new Date(a.date_iso));
+            compiledList.sort((a, b) => {
+                const dateA = a.date_iso ? new Date(a.date_iso.includes('T') ? a.date_iso : a.date_iso + 'T00:00:00') : new Date(0);
+                const dateB = b.date_iso ? new Date(b.date_iso.includes('T') ? b.date_iso : b.date_iso + 'T00:00:00') : new Date(0);
+                return dateB - dateA;
+            });
             return compiledList;
         }
 
