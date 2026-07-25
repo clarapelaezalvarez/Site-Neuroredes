@@ -663,7 +663,7 @@
     </footer>
 
     <!-- JS Logic & Data -->
-    <script src="blog-data.js?v=2.1"></script>
+    <script src="blog-data.js?v=2.2"></script>
     <script src="script.js?v=1.4"></script>
     <script>
         // Baseline posts list
@@ -1040,10 +1040,10 @@
             
             // Runtime Guard: Clean up any leading element repeating the post title
             if (post.title) {
-                const normTitle = post.title.replace(/[^\w\s]/g, '').toLowerCase().trim();
+                const normTitle = normalizeText(post.title).replace(/[^a-z0-9]/g, '');
                 const firstChild = readerContent.firstElementChild;
                 if (firstChild && normTitle.length > 5) {
-                    const childText = firstChild.textContent.replace(/[^\w\s]/g, '').toLowerCase().trim();
+                    const childText = normalizeText(firstChild.textContent).replace(/[^a-z0-9]/g, '');
                     if (childText === normTitle || (childText.length > 5 && (childText === normTitle || normTitle.startsWith(childText) || childText.startsWith(normTitle)))) {
                         firstChild.remove();
                     }
