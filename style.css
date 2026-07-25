@@ -2381,15 +2381,15 @@ iframe[class*="translate"] {
 
 
 /* Article Reader Typography & Tables */
-.reader-body {
+.reader-body, .reader-content-body {
     font-family: var(--font-body);
     color: var(--text-main);
     line-height: 1.75;
 }
 
-.reader-body h2 {
+.reader-body h2, .reader-content-body h2 {
     font-family: var(--font-heading);
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--color-primary);
     margin-top: 2.25rem;
@@ -2399,7 +2399,7 @@ iframe[class*="translate"] {
     padding-bottom: 0.4rem;
 }
 
-.reader-body h3 {
+.reader-body h3, .reader-content-body h3 {
     font-family: var(--font-heading);
     font-size: 1.25rem;
     font-weight: 600;
@@ -2409,27 +2409,37 @@ iframe[class*="translate"] {
     line-height: 1.4;
 }
 
-.reader-body p {
+.reader-body h4, .reader-content-body h4 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.reader-body p, .reader-content-body p {
     font-size: 1.05rem;
     line-height: 1.8;
     color: var(--text-main);
     margin-bottom: 1.25rem;
 }
 
-.reader-body ul, .reader-body ol {
+.reader-body ul, .reader-content-body ul, .reader-body ol, .reader-content-body ol {
     margin-top: 0.5rem;
     margin-bottom: 1.5rem;
     padding-left: 1.75rem;
 }
 
-.reader-body li {
+.reader-body li, .reader-content-body li {
     font-size: 1.05rem;
     line-height: 1.7;
     color: var(--text-main);
     margin-bottom: 0.6rem;
 }
 
-.reader-body table, .reader-body .article-table {
+.reader-body table, .reader-content-body table, .reader-body .article-table, .reader-content-body .article-table {
     width: 100%;
     border-collapse: collapse;
     margin: 1.75rem 0;
@@ -2441,19 +2451,19 @@ iframe[class*="translate"] {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.reader-body th, .reader-body td {
+.reader-body th, .reader-content-body th, .reader-body td, .reader-content-body td {
     padding: 0.85rem 1.1rem;
     border: 1px solid var(--border-color);
     text-align: left;
 }
 
-.reader-body th {
+.reader-body th, .reader-content-body th {
     background-color: var(--color-primary);
     color: #ffffff;
     font-weight: 600;
     font-family: var(--font-heading);
 }
 
-.reader-body tr:nth-child(even) {
+.reader-body tr:nth-child(even), .reader-content-body tr:nth-child(even) {
     background-color: var(--bg-sec);
 }
