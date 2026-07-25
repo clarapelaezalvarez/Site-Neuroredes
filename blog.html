@@ -662,7 +662,8 @@
         </div>
     </footer>
 
-    <!-- JS Logic -->
+    <!-- JS Logic & Data -->
+    <script src="blog-data.js?v=1.0"></script>
     <script src="script.js?v=1.4"></script>
     <script>
         // Baseline posts list
@@ -728,16 +729,20 @@
         // Helper function to deduplicate and sort posts by slug (or id if slug is missing)
         function getMergedPosts(localPosts, baselinePosts) {
             const postMap = new Map();
-            // Load base posts first
+            // Load official baseline posts first (official blog-data.json HAS HIGHEST PRIORITY)
             baselinePosts.forEach(p => {
-                const key = p.slug || p.id;
+                const key = String(p.slug || p.id);
                 postMap.set(key, p);
             });
-            // Overwrite or append with custom posts
-            localPosts.forEach(p => {
-                const key = p.slug || p.id;
-                postMap.set(key, p);
-            });
+            // Only add local custom posts if they are NEW posts created by user (do NOT overwrite official posts)
+            if (Array.isArray(localPosts)) {
+                localPosts.forEach(p => {
+                    const key = String(p.slug || p.id);
+                    if (!postMap.has(key)) {
+                        postMap.set(key, p);
+                    }
+                });
+            }
             
             const compiledList = Array.from(postMap.values());
             // Sort posts by date_iso descending
@@ -767,21 +772,22 @@
             URL.revokeObjectURL(url);
         }
 
-        // Load data from blog-data.json & local custom posts
+        // Load data from window.BLOG_DATA / blog-data.json
         async function loadBlogData() {
             try {
-                const response = await fetch('blog-data.json');
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar dados do blog');
+                // Clear any stale local storage cache completely
+                localStorage.removeItem('custom_blog_posts');
+                
+                if (window.BLOG_DATA && Array.isArray(window.BLOG_DATA) && window.BLOG_DATA.length > 0) {
+                    basePosts = window.BLOG_DATA;
+                } else {
+                    const response = await fetch('blog-data.json');
+                    if (response.ok) {
+                        basePosts = await response.json();
+                    }
                 }
-                basePosts = await response.json();
                 
-                // Get custom local storage posts
-                const localCustomPosts = JSON.parse(localStorage.getItem('custom_blog_posts') || '[]');
-                
-                // Combine custom posts (placed first/newest) + baseline posts without duplicates
-                blogPosts = getMergedPosts(localCustomPosts, basePosts);
-                
+                blogPosts = [...basePosts];
                 filteredPosts = [...blogPosts];
                 totalCountSpan.textContent = blogPosts.length;
                 
@@ -791,13 +797,14 @@
                 // Check if a specific post slug or ID is requested via URL hash
                 handleUrlHash();
             } catch (err) {
-                console.error(err);
-                postsContainer.innerHTML = `
-                    <div class="blog-error">
-                        <i class="fas fa-triangle-exclamation"></i>
-                        <p>Ocorreu um erro ao carregar os artigos do blog. Por favor, tente novamente mais tarde.</p>
-                    </div>
-                `;
+                console.error("Error loading blog data:", err);
+                if (window.BLOG_DATA) {
+                    basePosts = window.BLOG_DATA;
+                    blogPosts = [...basePosts];
+                    filteredPosts = [...blogPosts];
+                    totalCountSpan.textContent = blogPosts.length;
+                    updateBlogView();
+                }
             }
         }
         
