@@ -574,14 +574,19 @@
         <div class="reader-modal-overlay"></div>
         <div class="reader-modal-container">
             <!-- Modal Header / Controls -->
-            <div class="reader-header">
-                <button class="reader-btn-back" id="reader-close-btn" aria-label="Voltar para a lista">
-                    <i class="fas fa-arrow-left"></i> Voltar para o Blog
-                </button>
-                <div class="reader-actions">
-                    <button class="reader-action-btn" id="reader-share-btn" title="Copiar link do artigo">
-                        <i class="fas fa-share-nodes"></i> Compartilhar
+            <div class="reader-header-bar">
+                <div class="reader-header">
+                    <button class="reader-btn-back" id="reader-close-btn" aria-label="Voltar para a lista">
+                        <i class="fas fa-arrow-left"></i> <span>Voltar para o Blog</span>
                     </button>
+                    <div class="reader-actions">
+                        <button class="reader-action-btn" id="reader-share-btn" title="Copiar link do artigo para compartilhar">
+                            <i class="fas fa-share-nodes"></i> <span>Compartilhar</span>
+                        </button>
+                        <button class="reader-action-btn" id="reader-fullscreen-btn" title="Alternar Tela Cheia">
+                            <i class="fas fa-expand"></i> <span id="fullscreen-btn-text">Tela Cheia</span>
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -698,6 +703,8 @@
         const readerCloseBtn = document.getElementById('reader-close-btn');
         const readerFooterCloseBtn = document.getElementById('reader-footer-close-btn');
         const readerShareBtn = document.getElementById('reader-share-btn');
+        const readerFullscreenBtn = document.getElementById('reader-fullscreen-btn');
+        const fullscreenBtnText = document.getElementById('fullscreen-btn-text');
         const readingProgressBar = document.getElementById('reading-progress');
         const modalContainer = readerModal.querySelector('.reader-modal-container');
         
@@ -1020,10 +1027,11 @@
             paginationControls.appendChild(nextBtn);
         }
         
-        // Open Premium Article Reader Modal
+        // Open Premium Article Reader Modal (Full Screen)
         let activePost = null;
         
         function openArticle(post) {
+            if (!post) return;
             activePost = post;
             readerTitle.textContent = post.title;
             readerDate.textContent = post.date;
@@ -1064,13 +1072,16 @@
                 readerImgWrapper.style.display = 'none';
             }
             
-            // Set URL hash for deep linking
-            window.location.hash = `post-${post.id}`;
+            // Set URL hash for shareable deep linking (prefer slug if available, else numeric id)
+            const postSlugOrId = post.slug || post.id;
+            if (window.location.hash !== `#post-${postSlugOrId}`) {
+                history.replaceState(null, "", `#post-${postSlugOrId}`);
+            }
             
             // Reset reading progress bar
             readingProgressBar.style.width = '0%';
             
-            // Show modal
+            // Show full screen reader modal
             readerModal.classList.add('active');
             readerModal.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden'; // Stop scrolling on background
@@ -1083,6 +1094,10 @@
         }
         
         function closeArticle() {
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+            
             readerModal.classList.remove('active');
             readerModal.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = ''; // Restore background scroll
@@ -1093,6 +1108,35 @@
             modalContainer.removeEventListener('scroll', updateReadingProgress);
             activePost = null;
         }
+
+        // Toggle Native Browser Fullscreen
+        function toggleArticleFullscreen() {
+            if (!document.fullscreenElement) {
+                if (readerModal.requestFullscreen) {
+                    readerModal.requestFullscreen().catch(err => {
+                        console.log("Fullscreen request error:", err);
+                    });
+                } else if (readerModal.webkitRequestFullscreen) {
+                    readerModal.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            if (readerFullscreenBtn && fullscreenBtnText) {
+                if (document.fullscreenElement) {
+                    readerFullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> <span>Sair da Tela Cheia</span>';
+                } else {
+                    readerFullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> <span id="fullscreen-btn-text">Tela Cheia</span>';
+                }
+            }
+        });
         
         function updateReadingProgress() {
             const scrollTop = modalContainer.scrollTop;
@@ -1106,22 +1150,42 @@
         }
         
         // Share article link
-        function shareArticle() {
+        async function shareArticle() {
             if (!activePost) return;
-            const shareUrl = `${window.location.origin}${window.location.pathname}#post-${activePost.id}`;
+            const postSlugOrId = activePost.slug || activePost.id;
+            const shareUrl = `${window.location.origin}${window.location.pathname}#post-${postSlugOrId}`;
             
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                const originalText = readerShareBtn.innerHTML;
-                readerShareBtn.innerHTML = '<i class="fas fa-check"></i> Link copiado!';
+            // Keep URL hash synchronized
+            history.replaceState(null, "", `#post-${postSlugOrId}`);
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: activePost.title,
+                        text: activePost.excerpt || activePost.title,
+                        url: shareUrl,
+                    });
+                    return;
+                } catch (err) {
+                    if (err.name === 'AbortError') return;
+                }
+            }
+            
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                const originalHtml = readerShareBtn.innerHTML;
+                readerShareBtn.innerHTML = '<i class="fas fa-check"></i> <span>Link copiado!</span>';
                 readerShareBtn.classList.add('copied');
+                showToast('Link do artigo copiado para a área de transferência!');
                 
                 setTimeout(() => {
-                    readerShareBtn.innerHTML = originalText;
+                    readerShareBtn.innerHTML = originalHtml;
                     readerShareBtn.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
+                }, 2500);
+            } catch (err) {
                 console.error('Could not copy text: ', err);
-            });
+                showToast('Não foi possível copiar o link', false);
+            }
         }
         
         // Toast Notification Banner Utility
@@ -1144,13 +1208,34 @@
             }, 4000);
         }
         
-        // Handles URL hash parameters (deep linking)
+        // Handles URL hash parameters (deep linking support by slug or id)
         function handleUrlHash() {
             const hash = window.location.hash;
             if (hash && hash.startsWith('#post-')) {
-                const postId = parseInt(hash.replace('#post-', ''), 10);
-                if (!isNaN(postId)) {
-                    const post = blogPosts.find(p => p.id === postId);
+                const rawParam = decodeURIComponent(hash.replace('#post-', '')).trim();
+                if (rawParam && blogPosts && blogPosts.length > 0) {
+                    // Match by slug
+                    let post = blogPosts.find(p => p.slug === rawParam);
+                    
+                    // Match by numeric ID
+                    if (!post) {
+                        const numericId = parseInt(rawParam, 10);
+                        if (!isNaN(numericId)) {
+                            post = blogPosts.find(p => p.id === numericId);
+                        }
+                    }
+
+                    // Match by string ID
+                    if (!post) {
+                        post = blogPosts.find(p => String(p.id) === rawParam);
+                    }
+                    
+                    // Match by normalized slug
+                    if (!post) {
+                        const normParam = normalizeText(rawParam);
+                        post = blogPosts.find(p => p.slug && normalizeText(p.slug) === normParam);
+                    }
+                    
                     if (post) {
                         openArticle(post);
                     }
@@ -1390,6 +1475,7 @@
         readerCloseBtn.addEventListener('click', closeArticle);
         readerFooterCloseBtn.addEventListener('click', closeArticle);
         readerShareBtn.addEventListener('click', shareArticle);
+        if (readerFullscreenBtn) readerFullscreenBtn.addEventListener('click', toggleArticleFullscreen);
         
         // Author Panel triggers
         openAuthorBtn.addEventListener('click', openAuthorPanel);
